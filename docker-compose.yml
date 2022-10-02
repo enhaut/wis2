@@ -1,0 +1,34 @@
+version: "3.9"
+
+services:
+  db:
+    container_name: db
+    image: mariadb
+    command: --init-file /data/application/init.sql
+    volumes:
+      - ./web/init.sql:/data/application/init.sql:ro
+      - wis2DB:/var/lib/mysql
+    environment:
+      MARIADB_RANDOM_ROOT_PASSWORD: "yes"
+      MARIADB_USER: wis_user
+      MARIADB_PASSWORD: 63Sh682q
+      MARIADB_DATABASE: wis2
+  web:
+    build: .
+    command: pipenv run python web/manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/wis
+    ports:
+      - "8000:8000"
+    environment:
+      MARIADB_USER: wis_user
+      MARIADB_PASSWORD: 63Sh682q
+      MARIADB_DATABASE: wis2
+    depends_on:
+      - db
+    links:
+      - db
+
+volumes:
+  wis2DB:
+    driver: local

@@ -80,8 +80,16 @@ DATABASES = {
         "ENGINE": "django.db.backends.sqlite3",
         "NAME": BASE_DIR / "db.sqlite3",
     },
+    "production": {
+        "ENGINE": "django.db.backends.mysql",
+        "NAME": os.getenv("MARIADB_DATABASE"),
+        "USER": os.getenv("MARIADB_USER"),
+        "PASSWORD": os.getenv("MARIADB_PASSWORD"),
+        "HOST": "db",
+        "PORT": "3306"
+    }
 }
-DATABASES["default"] = DATABASES["development"]
+DATABASES["default"] = DATABASES["development" if DEBUG else "production"]
 
 
 # Password validation
