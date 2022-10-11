@@ -1,5 +1,9 @@
+{% extends "index.html" %}
+
+{% load static %}
+{% block content %}
 <a href="https://www.fit.vut.cz/">
-            <img src="images/logo_new.png" alt="Logo">
+            <img src="{% static 'login/images/logo_new.png' %}" alt="Logo">
         </a>
         <h1>Informačný systém WIS2</h1>
         <h4>Len pre demonštračné účely.</h4>
@@ -9,3 +13,4 @@
             <a class="button" tabindex="4" role="menuitem" href="https://www.fit.vut.cz/applicants/"> Vstup pre neregistrovaných</a>    <!zameniť za db>
             <p class="h4"> &copy Studis Lovers&#128525</p>
         </div>
+{% endblock %}
