@@ -38,7 +38,8 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "login",
-    "class"
+    "class",
+    "overview"
 ]
 
 MIDDLEWARE = [
@@ -113,6 +114,8 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 AUTH_USER_MODEL = 'login.User'
+LOGIN_REDIRECT_URL = '/overview'
+LOGIN_URL = '/'
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/
