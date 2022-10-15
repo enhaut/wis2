@@ -37,7 +37,9 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "login",
     "class",
+    "overview"
 ]
 
 MIDDLEWARE = [
@@ -111,6 +113,9 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+AUTH_USER_MODEL = 'login.User'
+LOGIN_REDIRECT_URL = '/overview'
+LOGIN_URL = '/'
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/
@@ -128,6 +133,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
 STATIC_URL = "static/"
+STATICFILES_DIRS = [
+    BASE_DIR / "static"
+]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field

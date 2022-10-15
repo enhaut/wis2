@@ -1,3 +1,5 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,7 +10,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-2">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>WIS2</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="{% static 'style.css' %}">
 </head>
 <body>
     <ul>
@@ -24,7 +26,7 @@
 
     </ul>
     <div role="main" class="content">
-        <!--TODO import-->
+        {% block content %}{% endblock %}
     </div>
 </body>
 </html>
