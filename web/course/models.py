@@ -1,9 +1,14 @@
 from pyexpat import model
 from unittest.util import _MAX_LENGTH
 from django.db import models
+import sys
+sys.path.append('..')
+from login.models import User
 
 
 class Course(models.Model):
+    approved_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='approved_by')
+    parameters_set_by = models.ForeignKey(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=50)
     description = models.CharField(max_length=100)
     price = models.IntegerField()
@@ -20,8 +25,8 @@ class Course(models.Model):
 
 
 class CourseUpdate(models.Model):
-    course_update_id = models.ForeignKey(Course, on_delete=models.CASCADE)
-    description = models.CharField(max_lenght=100)
+    published_by = models.ForeignKey(User, on_delete=models.CASCADE)
+    description = models.CharField(max_length=100)
     date = models.DateTimeField()
     
 

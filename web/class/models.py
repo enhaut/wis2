@@ -1,6 +1,7 @@
 from django.db import models
-
-# Create your models here.
+import sys
+sys.path.append('..')
+from login.models import User
 
 
 class Class(models.Model):
@@ -12,9 +13,11 @@ class Class(models.Model):
 
 
 class Assessment(models.Model):
+    entered_points_by = models.ForeignKey(User, on_delete=models.CASCADE)
     class_assessment = models.ForeignKey(Class, on_delete=models.CASCADE)
     point_evaluation = models.IntegerField()
     published_date = models.DateTimeField()
+
 
 class Type_of_class(models.Model):
     LECTURE = 'LEC'
