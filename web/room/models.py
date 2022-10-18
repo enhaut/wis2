@@ -1,7 +1,6 @@
 from django.db import models
 
-# Create your models here.
-
 
 class Room(models.Model):
-    """TODO: attributes"""
+    name = models.CharField(max_length=50)
+    capacity = models.IntegerField()
