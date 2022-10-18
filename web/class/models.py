@@ -1,10 +1,12 @@
 from django.db import models
-
+import sys
+sys.path.append('..')
+from course.models import Course
 # Create your models here.
 
 
 class Class(models.Model):
-    """TODO: attributes"""
+    #courses_class = models.ForeignKey(Course, on_delete=models.CASCADE)
     name = models.CharField(max_length=50)
     description = models.CharField(max_length=100)
     date = models.DateTimeField()
@@ -16,7 +18,7 @@ class Assessment(models.Model):
     point_evaluation = models.IntegerField()
     published_date = models.DateTimeField()
 
-class Type_of_class(models.Model):
+class TypeOfClass(models.Model):
     LECTURE = 'LEC'
     PRACTICE = 'PRA'
     DEMO_PRACTICE = 'DPR'
@@ -36,6 +38,4 @@ class Type_of_class(models.Model):
     ]
 
     types_of_classes = models.CharField(max_length=3, choices=types_of_classes_choices, default=LECTURE)
-
-    def is_upperclass(self):
-        return self.types_of_classes in {self.LECTURE, self.PROJECT}
+    type_of_class = models.ForeignKey(Class, on_delete=models.CASCADE)
