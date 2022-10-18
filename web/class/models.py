@@ -6,7 +6,7 @@ from course.models import Course
 
 
 class Class(models.Model):
-    #courses_class = models.ForeignKey(Course, on_delete=models.CASCADE)
+    courses_class = models.ForeignKey(Course, on_delete=models.CASCADE)
     name = models.CharField(max_length=50)
     description = models.CharField(max_length=100)
     date = models.DateTimeField()
