@@ -6,8 +6,14 @@ from login.models import User
 from course.models import Course
 
 
+class TypeOfClass(models.Model):
+    shortcut = models.CharField(max_length=3)
+    name = models.CharField(max_length=20)
+    description = models.CharField(max_length=100)
+
 class Class(models.Model):
-    #courses_class = models.ForeignKey(Course, on_delete=models.CASCADE)
+    courses_class = models.ForeignKey(Course, on_delete=models.CASCADE)
+    type_of_class = models.ForeignKey(TypeOfClass, on_delete=models.RESTRICT)
     name = models.CharField(max_length=50)
     description = models.CharField(max_length=100)
     date = models.DateTimeField()

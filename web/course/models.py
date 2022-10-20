@@ -4,10 +4,16 @@ sys.path.append('..')
 from login.models import User
 
 
+class TypeOfCourse(models.Model):
+    shortcut = models.CharField(max_length=3)
+    name = models.CharField(max_length=20)
+    description = models.CharField(max_length=100)
+
 class Course(models.Model):
     approved_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='approved_by')
     guarantor = models.ForeignKey(User, on_delete=models.CASCADE)
     students_course = models.ForeignKey(User, on_delete=models.CASCADE)
+
     name = models.CharField(max_length=50)
     description = models.CharField(max_length=100)
     price = models.IntegerField()
