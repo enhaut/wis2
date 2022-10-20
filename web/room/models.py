@@ -5,6 +5,6 @@ from login.models import User
 
 
 class Room(models.Model):
-    enter_by = models.ForeignKey(User, on_delete=models.CASCADE)
+    enter_by = models.ForeignKey(User)
     name = models.CharField(max_length=50)
     capacity = models.IntegerField()
