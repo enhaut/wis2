@@ -25,7 +25,7 @@ class Class(models.Model):
 
 
 class Assessment(models.Model):
-    entered_points_by = models.ForeignKey(User, on_delete=models.CASCADE)
+    entered_points_by = models.ForeignKey(User, on_delete=models.SET_NULL)
     class_assessment = models.ForeignKey(Class, on_delete=models.RESTRICT)
     point_evaluation = models.FloatField()
     published_date = models.DateTimeField()
