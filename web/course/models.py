@@ -5,7 +5,6 @@ from login.models import User
 
 
 class Course(models.Model):
-    students_course = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     name = models.CharField(max_length=50)
     description = models.CharField(max_length=100)
     price = models.IntegerField()
