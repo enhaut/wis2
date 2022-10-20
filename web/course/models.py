@@ -10,7 +10,7 @@ class TypeOfCourse(models.Model):
     description = models.CharField(max_length=100)
 
 class Course(models.Model):
-    type_of_course = models.ForeignKey(TypeOfCourse, on_delete=models.CASCADE)
+    type_of_course = models.ForeignKey(TypeOfCourse, on_delete=models.RESTRICT)
     name = models.CharField(max_length=50)
     description = models.CharField(max_length=100)
     price = models.IntegerField()

@@ -12,7 +12,7 @@ class TypeOfClass(models.Model):
 
 class Class(models.Model):
     courses_class = models.ForeignKey(Course, on_delete=models.CASCADE)
-    type_of_class = models.ForeignKey(TypeOfClass, on_delete=models.CASCADE)
+    type_of_class = models.ForeignKey(TypeOfClass, on_delete=models.RESTRICT)
     name = models.CharField(max_length=50)
     description = models.CharField(max_length=100)
     date = models.DateTimeField()
@@ -20,6 +20,6 @@ class Class(models.Model):
 
 
 class Assessment(models.Model):
-    class_assessment = models.ForeignKey(Class, on_delete=models.CASCADE)
+    class_assessment = models.ForeignKey(Class, on_delete=models.RESTRICT)
     point_evaluation = models.IntegerField()
     published_date = models.DateTimeField()
