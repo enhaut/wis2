@@ -4,7 +4,6 @@ sys.path.append('..')
 from course.models import Course
 from room.models import Room
 from login.models import User
-# Create your models here.
 
 
 class TypeOfClass(models.Model):
