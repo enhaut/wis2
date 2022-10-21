@@ -3,6 +3,7 @@ from django.shortcuts import render
 
 from django.views.generic import View
 from django.contrib.auth.mixins import LoginRequiredMixin
+from braces.views import GroupRequiredMixin
 
 
 class OverviewView(LoginRequiredMixin, View):
@@ -11,10 +12,16 @@ class OverviewView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         if request.user.groups.filter(name='Student').exists():
             return HttpResponseRedirect('/student')
-        else:
+        elif request.user.groups.filter(name="Teacher").exists():
             return HttpResponseRedirect('/employee')
+        elif request.user.groups.filter(name="Guarantor").exists():
+            return HttpResponseRedirect('/employee')
+        elif request.user.groups.filter(name="Administrator").exists():
+            return HttpResponseRedirect('/employee')
+        else:
+            return HttpResponseRedirect('/overview')
 
-class StudentView(LoginRequiredMixin, View):
+class StudentView(LoginRequiredMixin, GroupRequiredMixin, View):
     template_name = "student.html"
 
     group_required = u"Student"
@@ -24,7 +31,7 @@ class StudentView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         return render(request, self.template_name)
 
-class EmployeeView(LoginRequiredMixin, View):
+class EmployeeView(LoginRequiredMixin, GroupRequiredMixin, View):
     template_name = "employee.html"
 
     group_required = u"Employee"

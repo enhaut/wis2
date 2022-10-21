@@ -1,6 +1,13 @@
 {% extends "index.html" %}
 
 {% load static %}
-{% block content %}
+{% block menu %}
+        <li>
+            <a style="position:absolute; right: 70px" class="menubutton" href="{% url 'logout' %}">
+                <span style="font-size:24px;line-height:14px;font-weight:normal">&nbsp;⍈&nbsp;</span>
+            </a>
+        </li>
+
+{% endblock %} {% block content %}
     <h1>logged</h1>
 {% endblock %}
