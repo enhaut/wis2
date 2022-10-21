@@ -17,9 +17,9 @@ class OverviewView(LoginRequiredMixin, View):
 class StudentView(LoginRequiredMixin, View):
     template_name = "student.html"
 
-    #group_required = u"Administrator"
-    #redirect_unauthenticated_users = False
-    #raise_exception = True
+    group_required = u"Student"
+    redirect_unauthenticated_users = False
+    raise_exception = True
 
     def get(self, request, *args, **kwargs):
         return render(request, self.template_name)
@@ -27,9 +27,9 @@ class StudentView(LoginRequiredMixin, View):
 class EmployeeView(LoginRequiredMixin, View):
     template_name = "employee.html"
 
-    #group_required = u"Administrator"
-    #redirect_unauthenticated_users = False
-    #raise_exception = True
+    group_required = u"Employee"
+    redirect_unauthenticated_users = False
+    raise_exception = True
 
     def get(self, request, *args, **kwargs):
         return render(request, self.template_name)
