@@ -11,6 +11,8 @@ class TypeOfCourse(models.Model):
 
 
 class Course(models.Model):
+    approved_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='approved_by')
+    guarantor = models.ForeignKey(User, on_delete=models.CASCADE)
     type_of_course = models.ForeignKey(TypeOfCourse, on_delete=models.RESTRICT)
     name = models.CharField(max_length=50)
     description = models.CharField(max_length=100)
@@ -21,6 +23,6 @@ class Course(models.Model):
 
 
 class CourseUpdate(models.Model):
-    course_update_id = models.ForeignKey(Course, on_delete=models.CASCADE)
+    published_by = models.ForeignKey(User, on_delete=models.CASCADE)
     description = models.CharField(max_length=100)
     date = models.DateTimeField()

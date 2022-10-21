@@ -4,7 +4,6 @@ sys.path.append('..')
 from course.models import Course
 from room.models import Room
 from login.models import User
-# Create your models here.
 
 
 class TypeOfClass(models.Model):
@@ -25,6 +24,7 @@ class Class(models.Model):
 
 
 class Assessment(models.Model):
+    entered_points_by = models.ForeignKey(User, on_delete=models.SET_NULL, related_name="evaluates", null=True)
     class_assessment = models.ForeignKey(Class, on_delete=models.RESTRICT)
     point_evaluation = models.FloatField()
     published_date = models.DateTimeField()
