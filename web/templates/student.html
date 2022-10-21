@@ -1,0 +1,36 @@
+{% extends "index.html" %}
+
+{% load static %}
+
+{% block menu %}
+        <li>
+            <a class="menubutton" href="{% url 'student' %}">
+                <span style="font-size:24px;line-height:14px;font-weight:normal">&nbsp;⌂&nbsp;</span>
+            </a>
+        </li>
+        <li>
+            <a style="position:absolute; right: 70px" class="menubutton" href="{% url 'logout' %}">
+                <span style="font-size:24px;line-height:14px;font-weight:normal">&nbsp;⍈&nbsp;</span>
+            </a>
+        </li>
+
+{% endblock %} {% block content %}
+    <h1>Informačný systém WIS2</h1>
+        xlogin00
+        <b>Adam Loginský</b>
+        <br>
+            Ak. rok 2022/2023
+        </br>
+        <b>Posledný prístup:</b>
+        2022-10-10 10:10:10 z IP adresy 192.168.0.1
+
+        <div class="container">
+            <a class="button" tabindex="1" role="menuitem" href="{% url 'student' %}"> Upraviť profil</a>
+            <a class="button" tabindex="2" role="menuitem" href="{% url 'student' %}"> Prihlásiť kurz</a>
+            <a class="button" tabindex="3" role="menuitem" href="{% url 'student' %}"> Registrovať termín</a>
+            <a class="button" tabindex="4" role="menuitem" href="{% url 'student' %}"> Zobraziť hodnotenie</a>
+            <a class="button" tabindex="5" role="menuitem" href="{% url 'student' %}"> Zobraziť rozvrh</a>
+            <a class="button" tabindex="6" role="menuitem" href="{% url 'student' %}"> Prehľad kurzov</a>
+            <a class="button" tabindex="6" role="menuitem" href="{% url 'logout' %}"> Odhlásiť z WIS2</a>
+        </div>
+{% endblock %}

@@ -1,0 +1,30 @@
+{% extends "index.html" %}
+
+{% load static %}
+
+{% block menu %}
+        <li>
+            <a class="menubutton" href="{% url 'employee' %}">
+                <span style="font-size:24px;line-height:14px;font-weight:normal">&nbsp;⌂&nbsp;</span>
+            </a>
+        </li>
+
+        <li class="menuspace"></li>
+        <li>
+            <a style="position:absolute; right: 70px" class="menubutton" href="{% url 'logout' %}">
+                <span style="font-size:24px;line-height:14px;font-weight:normal">&nbsp;⍈&nbsp;</span>
+            </a>
+        </li>
+{% endblock %} {% block content %}
+    <h1>Informačný systém WIS2</h1>
+        <div class="container">
+            <a class="button" tabindex="1" role="menuitem" href="{% url 'employee' %}"> Upraviť profil</a>
+            <a class="button" tabindex="2" role="menuitem" href="{% url 'employee' %}"> Schváliť registráciu študentom</a>
+            <a class="button" tabindex="3" role="menuitem" href="{% url 'employee' %}"> Nastaviť parametre kurzu</a>
+            <a class="button" tabindex="4" role="menuitem" href="{% url 'employee' %}"> Pridať lektora</a>
+            <a class="button" tabindex="5" role="menuitem" href="{% url 'employee' %}"> Zobraziť prehľad študentov</a>
+            <a class="button" tabindex="6" role="menuitem" href="{% url 'employee' %}"> Udeliť hodnotenie</a>
+            <a class="button" tabindex="6" role="menuitem" href="{% url 'logout' %}"> Odhlásiť z WIS2</a>
+        </div>
+    </div>
+{% endblock %}
