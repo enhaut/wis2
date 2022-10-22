@@ -19,14 +19,14 @@ class RegistrationSettings(RegistrationSettingsBase):
 
 
 class TypeOfCourse(models.Model):
-    shortcut = models.CharField(max_length=3)
+    shortcut = models.CharField(max_length=3, primary_key=True)
     name = models.CharField(max_length=20)
     description = models.CharField(max_length=100)
 
 
 class Course(models.Model):
     shortcut = models.CharField(max_length=3, primary_key=True)
-    approved_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='approved_by')
+    approved_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='approved_by', null=True)
     guarantor = models.ForeignKey(User, on_delete=models.CASCADE)
     type_of_course = models.ForeignKey(TypeOfCourse, on_delete=models.RESTRICT)
     name = models.CharField(max_length=50)
