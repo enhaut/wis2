@@ -21,7 +21,8 @@ class OverviewView(LoginRequiredMixin, View):
         else:
             return HttpResponseRedirect('/overview')
 
-class StudentView(LoginRequiredMixin, GroupRequiredMixin, View):
+
+class StudentView(GroupRequiredMixin, View):
     template_name = "student.html"
 
     group_required = u"Student"
@@ -31,10 +32,11 @@ class StudentView(LoginRequiredMixin, GroupRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         return render(request, self.template_name)
 
-class EmployeeView(LoginRequiredMixin, GroupRequiredMixin, View):
+
+class EmployeeView(GroupRequiredMixin, View):
     template_name = "employee.html"
 
-    group_required = u"Employee"
+    group_required = [u"Teacher", u"Guarantor"]
     redirect_unauthenticated_users = False
     raise_exception = True
 
