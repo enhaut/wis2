@@ -1,5 +1,7 @@
 from django.shortcuts import render
 from django.db.models import Q
+from django.forms import ModelForm
+from django.http import HttpResponseRedirect
 from django.views.generic import View
 from braces.views import GroupRequiredMixin
 from django.core.exceptions import ObjectDoesNotExist
@@ -52,5 +54,45 @@ class CourseAdminView(GroupRequiredMixin, View):
 
     def get(self, request, *args, **kwargs):
         return render(request, self.template_name, {"courses": self._get_courses(request)})
+
+
+class CreateCourseForm(ModelForm):
+    class Meta:
+        model = models.Course
+        fields = ["type_of_course", "shortcut", "name", "description", "price"]
+
+
+class CreateCourseView(GroupRequiredMixin, View):
+    template_name = "course_create.html"
+
+    group_required = [u"Guarantor", u"Administrator"]
+    redirect_unauthenticated_users = False
+    raise_exception = True
+
+    def get(self, request, *args, **kwargs):
+        return render(request, self.template_name, {"CreateForm": CreateCourseForm()})
+
+    def post(self, request):
+        form = CreateCourseForm(request.POST)
+        if form.is_valid():
+            course = form.save(commit=False)
+
+            course.guarantor = request.user
+            course.save()  # Now you can send it to DB
+
+            return HttpResponseRedirect("/admin/course/" + form.data["shortcut"])
+
+        return render(request, self.template_name, {"CreateForm": form})
+
+
+class EditCourseView(GroupRequiredMixin, View):
+    template_name = "course_edit.html"
+
+    group_required = [u"Guarantor", u"Administrator", u"Teacher"]
+    redirect_unauthenticated_users = False
+    raise_exception = True
+
+    def get(self, request, *args, **kwargs):
+        return render(request, self.template_name)
 
 

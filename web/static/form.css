@@ -1,0 +1,19 @@
+button[type=submit] {
+    text-align: center;
+    cursor: default;
+    padding: 4px 10px;
+    margin: 4px 0;
+    border: 1px solid #a9a9a9;
+    color: black;
+    background-color: #d3d3d3;
+    text-decoration: none;
+}
+form ul {
+    background: transparent;
+}
+ul.errorlist li {
+    color: red !important;
+}
+table {
+    border: 0;
+}
