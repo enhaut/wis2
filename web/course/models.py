@@ -25,6 +25,7 @@ class TypeOfCourse(models.Model):
 
 
 class Course(models.Model):
+    shortcut = models.CharField(max_length=3, primary_key=True)
     approved_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='approved_by')
     guarantor = models.ForeignKey(User, on_delete=models.CASCADE)
     type_of_course = models.ForeignKey(TypeOfCourse, on_delete=models.RESTRICT)
