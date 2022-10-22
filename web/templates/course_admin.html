@@ -1,0 +1,107 @@
+{% extends "course.html" %}
+{% load static %}
+{% load has_group %}
+
+{% block subcontent %}
+    <link rel="stylesheet" href="{% static 'table.css' %}">
+
+    {% if request.user|has_group:"Guarantor" %}
+        <table class="wisTable">
+            <thead>
+                <tr>
+                    <th colspan="4">Guaranted courses</th>
+                </tr>
+                <tr>
+                    <th>Zkr</th>
+                    <th>Course</th>
+                    <th>Typ</th>
+                    <th>Kr</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for course in courses.guaranted %}
+                    <tr class="type_{{ course.type_of_course.shortcut }}">
+                        <td>{{ course.shortcut }}</td>
+                        <td>{{ course.name }}</td>
+                        <td class="center">{{ course.type_of_course.shortcut }}</td>
+                        <td class="center">{{ course.price }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+    <br />
+    {% if request.user|has_group:"Teacher" %}
+        <table class="wisTable">
+            <thead>
+                <tr>
+                    <th colspan="4">Teached courses</th>
+                </tr>
+                <tr>
+                    <th>Zkr</th>
+                    <th>Course</th>
+                    <th>Typ</th>
+                    <th>Kr</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for course in courses.teached %}
+                    <tr class="type_{{ course.type_of_course.shortcut }}">
+                        <td>{{ course.shortcut }}</td>
+                        <td>{{ course.name }}</td>
+                        <td class="center">{{ course.type_of_course.shortcut }}</td>
+                        <td class="center">{{ course.price }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+    {% if request.user|has_group:"Administrator" %}
+        <table class="wisTable">
+            <thead>
+                <tr>
+                    <th colspan="4">Courses to approve</th>
+                </tr>
+                <tr>
+                    <th>Zkr</th>
+                    <th>Course</th>
+                    <th>Typ</th>
+                    <th>Kr</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for course in courses.to_approve %}
+                    <tr class="type_{{ course.type_of_course.shortcut }}">
+                        <td>{{ course.shortcut }}</td>
+                        <td>{{ course.name }}</td>
+                        <td class="center">{{ course.type_of_course.shortcut }}</td>
+                        <td class="center">{{ course.price }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <table class="wisTable">
+            <thead>
+                <tr>
+                    <th colspan="4">Courses to approve</th>
+                </tr>
+                <tr>
+                    <th>Zkr</th>
+                    <th>Course</th>
+                    <th>Typ</th>
+                    <th>Kr</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for course in courses.all %}
+                    <tr class="type_{{ course.type_of_course.shortcut }}">
+                        <td>{{ course.shortcut }}</td>
+                        <td>{{ course.name }}</td>
+                        <td class="center">{{ course.type_of_course.shortcut }}</td>
+                        <td class="center">{{ course.price }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+{% endblock %}
