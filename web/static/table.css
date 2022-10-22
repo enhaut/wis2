@@ -1,0 +1,34 @@
+table.wisTable {
+  font-family: Verdana, Geneva, sans-serif;
+  border: 2px solid #999999;
+  text-align: left;
+  border-collapse: collapse;
+}
+table.wisTable td, table.wisTable th {
+  border: 0px solid #FFFFFF;
+  padding: 3px 2px;
+}
+table.wisTable tbody td {
+  font-size: 13px;
+}
+table.wisTable tr:nth-child(even) {
+  background: #ADD8E6;
+}
+table.wisTable thead {
+  background: #ADD8E6;
+}
+table.wisTable thead th {
+  font-size: 17px;
+  font-weight: bold;
+  color: #000000;
+  text-align: left;
+}
+table.wisTable tfoot td {
+  font-size: 14px;
+}
+tr.type_V {
+  background-color: #f7f7af;
+}
+td.center {
+  align-content: center;
+}
