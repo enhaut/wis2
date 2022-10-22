@@ -1,9 +1,13 @@
 from django.db import models
 import sys
 sys.path.append('..')
-from course.models import Course
+from course.models import Course, RegistrationSettingsBase
 from room.models import Room
 from login.models import User
+
+
+class RegistrationSettings(RegistrationSettingsBase):
+    pass
 
 
 class TypeOfClass(models.Model):
@@ -18,7 +22,7 @@ class Class(models.Model):
     name = models.CharField(max_length=50)
     description = models.CharField(max_length=100)
     date = models.DateTimeField()
-    mandatory_registration = models.BinaryField()
+    registration = models.ForeignKey(RegistrationSettings, on_delete=models.SET_NULL, null=True)
     rooms = models.ManyToManyField(Room)
     students = models.ManyToManyField(User)
 
