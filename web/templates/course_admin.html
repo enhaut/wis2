@@ -21,8 +21,8 @@
             <tbody>
                 {% for course in courses.guaranted %}
                     <tr class="type_{{ course.type_of_course.shortcut }}">
-                        <td>{{ course.shortcut }}</td>
-                        <td>{{ course.name }}</td>
+                        <td><b>{{ course.shortcut }}</b></td>
+                        <td><a href="{% url 'edit_course' id=course.shortcut %}"><a href="{% url 'edit_course' id=course.shortcut %}">{{ course.name }}</a></a></td>
                         <td class="center">{{ course.type_of_course.shortcut }}</td>
                         <td class="center">{{ course.price }}</td>
                     </tr>
@@ -47,8 +47,8 @@
             <tbody>
                 {% for course in courses.teached %}
                     <tr class="type_{{ course.type_of_course.shortcut }}">
-                        <td>{{ course.shortcut }}</td>
-                        <td>{{ course.name }}</td>
+                        <td><b>{{ course.shortcut }}</b></td>
+                        <td><a href="{% url 'edit_course' id=course.shortcut %}">{{ course.name }}</a></td>
                         <td class="center">{{ course.type_of_course.shortcut }}</td>
                         <td class="center">{{ course.price }}</td>
                     </tr>
@@ -72,8 +72,8 @@
             <tbody>
                 {% for course in courses.to_approve %}
                     <tr class="type_{{ course.type_of_course.shortcut }}">
-                        <td>{{ course.shortcut }}</td>
-                        <td>{{ course.name }}</td>
+                        <td><b>{{ course.shortcut }}</b></td>
+                        <td><a href="{% url 'edit_course' id=course.shortcut %}">{{ course.name }}</a></td>
                         <td class="center">{{ course.type_of_course.shortcut }}</td>
                         <td class="center">{{ course.price }}</td>
                     </tr>
@@ -95,8 +95,8 @@
             <tbody>
                 {% for course in courses.all %}
                     <tr class="type_{{ course.type_of_course.shortcut }}">
-                        <td>{{ course.shortcut }}</td>
-                        <td>{{ course.name }}</td>
+                        <td><b>{{ course.shortcut }}</b></td>
+                        <td><a href="{% url 'edit_course' id=course.shortcut %}">{{ course.name }}</a></td>
                         <td class="center">{{ course.type_of_course.shortcut }}</td>
                         <td class="center">{{ course.price }}</td>
                     </tr>
@@ -104,4 +104,8 @@
             </tbody>
         </table>
     {% endif %}
+
+    <div class="container">
+        <a class="button" tabindex="1" role="menuitem" href="{% url 'create_course' %}"> Create course</a>
+    </div>
 {% endblock %}
