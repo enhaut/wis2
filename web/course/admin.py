@@ -33,7 +33,9 @@ class CourseAdminView(GroupRequiredMixin, View):
         courses = {}
 
         try:
-            courses["all"] = models.Course.objects.all()
+            courses["all"] = models.Course.objects.filter(
+                approved_by__isnull=False
+            )
         except ObjectDoesNotExist:
             courses["all"] = []
 
@@ -49,6 +51,7 @@ class CourseAdminView(GroupRequiredMixin, View):
     def _get_courses(self, request):
         courses = {}
         courses.update(self._get_teached_courser(request))
+        courses.update(self._get_approved_courses(request))
 
         return courses
 
