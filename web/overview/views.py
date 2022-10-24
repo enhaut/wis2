@@ -4,6 +4,9 @@ from django.shortcuts import render
 from django.views.generic import View
 from django.contrib.auth.mixins import LoginRequiredMixin
 from braces.views import GroupRequiredMixin
+import sys
+sys.path.append('..')
+from login.models import User
 
 
 class OverviewView(LoginRequiredMixin, View):
@@ -30,7 +33,16 @@ class StudentView(GroupRequiredMixin, View):
     raise_exception = True
 
     def get(self, request, *args, **kwargs):
-        return render(request, self.template_name)
+        user = request.user
+        if request.user.is_authenticated:
+            username = user.username
+            last_login = user.last_login
+            email = user.email
+            first_name = user.first_name
+            last_name = user.last_name
+            return render(request, 'student.html', {'username' : username, 'last_login' : last_login, 'email' : email, 'first_name' : first_name, 'last_name' : last_name})
+        else:
+            return render(request, self.template_name)
 
 
 class EmployeeView(GroupRequiredMixin, View):
