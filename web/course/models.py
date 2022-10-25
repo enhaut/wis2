@@ -23,7 +23,7 @@ class RegistrationSettings(RegistrationSettingsBase):
 
 
 class TypeOfCourse(models.Model):
-    shortcut = models.CharField(max_length=3, primary_key=True)
+    shortcut = models.CharField(max_length=4, primary_key=True)
     name = models.CharField(max_length=20)
     description = models.TextField(max_length=100)
 
@@ -41,7 +41,7 @@ def validate_course_name(value: str):
 
 class Course(models.Model):
     shortcut = models.CharField(
-        max_length=3,
+        max_length=4,
         primary_key=True,
         validators=[validate_course_name]
     )

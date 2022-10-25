@@ -1,12 +1,13 @@
 from django.shortcuts import render
 from django.db.models import Q
 from django.forms import ModelForm
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.views.generic import View
 from braces.views import GroupRequiredMixin
 from django.core.exceptions import ObjectDoesNotExist
 
 from . import models
+from .models import Course
 
 
 class CourseAdminView(GroupRequiredMixin, View):
@@ -98,4 +99,15 @@ class EditCourseView(GroupRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         return render(request, self.template_name)
 
+class ApproveCourseView(GroupRequiredMixin, View):
+    template_name = "course_edit.html"
 
+    group_required = [u"Administrator"]
+    redirect_unauthenticated_users = False
+    raise_exception = True
+
+    def get(self, request, id, *args, **kwargs):
+        course = Course.objects.get(shortcut=id)
+        #course.approved_by = request.user
+        course.save()
+        return HttpResponse(status=204)

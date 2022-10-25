@@ -4,6 +4,7 @@
 
 {% block subcontent %}
     <link rel="stylesheet" href="{% static 'table.css' %}">
+    <link rel="stylesheet" href="{% static 'approve.css' %}">
 
     {% if request.user|has_group:"Guarantor" %}
         <table class="wisTable">
@@ -57,30 +58,37 @@
         </table>
     {% endif %}
     {% if request.user|has_group:"Administrator" %}
-        <table class="wisTable">
+        <table class="wisTable" id="to_approve">
             <thead>
                 <tr>
-                    <th colspan="4">Courses to approve</th>
+                    <th colspan="5">Courses to approve</th>
                 </tr>
                 <tr>
                     <th>Zkr</th>
                     <th>Course</th>
                     <th>Typ</th>
                     <th>Kr</th>
+                    <th>Approve</th>
                 </tr>
             </thead>
             <tbody>
                 {% for course in courses.to_approve %}
-                    <tr class="type_{{ course.type_of_course.shortcut }}">
+                    <tr class="type_{{ course.type_of_course.shortcut }}" id="subject_{{ course.type_of_course.shortcut }}">
                         <td><b>{{ course.shortcut }}</b></td>
                         <td><a href="{% url 'edit_course' id=course.shortcut %}">{{ course.name }}</a></td>
                         <td class="center">{{ course.type_of_course.shortcut }}</td>
                         <td class="center">{{ course.price }}</td>
+                        <script src="{% static 'onclick.js' %}"></script>
+                        <td class="extra">
+                            <button id="tick" onclick="hide_and_approve('subject_{{ course.type_of_course.shortcut }}'); delete_row(this); style.display = 'none'">
+                                <a href="{% url 'approve_course' id=course.shortcut %}">&#9745</a>
+                            </button>
+                        </td>
                     </tr>
                 {% endfor %}
             </tbody>
         </table>
-        <table class="wisTable">
+        <table class="wisTable" id="approved">
             <thead>
                 <tr>
                     <th colspan="4">Approved courses</th>
