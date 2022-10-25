@@ -1,6 +1,60 @@
 {% extends "course.html" %}
 {% load static %}
+{% load has_group %}
 
 {% block subcontent %}
-    <h2>Edit course</h2>
+    <h2>Edit course: {{ course.shortcut }} ({{ course.name }})</h2>
+
+
+    {% if request.user|has_group:"Guarantor" %}
+    <link rel="stylesheet" href="{% static 'table.css' %}">
+    <link rel="stylesheet" href="{% static 'button.css' %}">
+    <style>ul.errorlist {background-color: transparent;color: red;}</style>
+    <table class="wisTable">
+            <thead>
+                <tr>
+                    <th colspan="4">Teachers</th>
+                </tr>
+                <tr>
+                    <th>Login</th>
+                    <th>Name</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for lector in course.lectors.all %}
+                    {% if lector|has_group:'Guarantor' %}
+                        <tr class="type_P">
+                    {% else %}
+                        <tr class="type_V">
+                    {% endif %}
+                        <td>{{ lector.username }}</td>
+                        <td class="center">{{ lector.first_name }} {{ lector.last_name }}</td>
+                        <td class="center">
+                            <form id="remove_lector" method="POST">
+                                {% csrf_token %}
+                                <input type="hidden" name="lector" value="{{ lector.username }}">
+                                <input type="hidden" name="form" value="remove_lector">
+                                <button type="submit">Remove</button>
+                                {{ form.remove.errors }}
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+                <tr class="type_P">
+                    <form id="add_lector" method="POST">
+                        {% csrf_token %}
+                        <td colspan="2">
+                            {{ form.lector }}
+                            <div style="background-color: transparent">
+                            {{ form.lector.errors }}
+                            </div>
+                        </td>
+                        <td class="center"><button type="submit">Add lector</button></td>
+                        <input type="hidden" name="form" value="add_lector">
+                    </form>
+                </tr>
+            </tbody>
+        </table>
+    {% endif %}
 {% endblock %}
