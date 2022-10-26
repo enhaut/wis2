@@ -1,28 +1,52 @@
 {% extends "course.html" %}
 {% load static %}
 {% load has_group %}
+{% load get_item %}
 
 {% block subcontent %}
     <h2>Edit course: {{ course.shortcut }} ({{ course.name }})</h2>
 
     {% include 'course/updates.html' %}
 
-    {% if request.user|has_group:"Teacher" or request.user|has_group:"Guarantor" %}
-        <link rel="stylesheet" href="{% static 'form.css' %}">
-        <form method="POST">
-            {% csrf_token %}
-            <input type="hidden" name="form" value="add_update">
-            <table>
-                {{ CreateUpdateForm.as_table }}
-                <tr>
-                    <td colspan="2">
-                        <button type="submit">Create</button>
-                    </td>
+    <link rel="stylesheet" href="{% static 'form.css' %}">
+    <form method="POST">
+        {% csrf_token %}
+        <input type="hidden" name="form" value="add_update">
+        <table>
+            {{ CreateUpdateForm.as_table }}
+            <tr>
+                <td colspan="2">
+                    <button type="submit">Create</button>
+                </td>
+            </tr>
+        </table>
+    </form>
+    <br>
+    <table class="wisTable">
+        <thead>
+            <tr>
+                <th colspan="5">Registered students</th>
+            </tr>
+            <tr>
+                <th>Login</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Points</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for student in course.students.all %}
+                <tr class="type_V">
+                    <td>{{ student.username }}</td>
+                    <td class="center">{{ student.first_name }} {{ student.last_name }}</td>
+                    <td class="center"><a href="mailto:{{ student.email }}">{{ student.email }}</a></td>
+                    <td class="center">{{ points|get_item:student.username }}</td>
+                    <td class="center">TODO</td>
                 </tr>
-            </table>
-        </form>
-        <br>
-    {% endif %}
+            {% endfor %}
+        </tbody>
+    </table> <br/>
 
     {% if request.user|has_group:"Guarantor" %}
     <link rel="stylesheet" href="{% static 'table.css' %}">

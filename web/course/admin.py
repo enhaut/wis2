@@ -15,6 +15,8 @@ from datetime import datetime
 import sys
 sys.path.append('..')
 from login.models import User
+import importlib
+Class = importlib.import_module("class.models", "Class")
 from . import models
 
 
@@ -182,7 +184,7 @@ class CreateCourseView(GroupRequiredMixin, View):
 class EditCourseView(GroupRequiredMixin, View):
     template_name = "course_edit.html"
 
-    group_required = [u"Guarantor", u"Administrator", u"Teacher"]
+    group_required = [u"Guarantor", u"Teacher"]
     redirect_unauthenticated_users = False
     raise_exception = True
 
@@ -201,6 +203,20 @@ class EditCourseView(GroupRequiredMixin, View):
             )
         except ObjectDoesNotExist:
             return []
+
+    def _get_students_points(self, course: models.Course):
+        points = {}
+        for student in course.students.all():
+            points[student.username] = 0
+            try:
+                classes = Class.Class.objects.filter(courses_class=course)
+                assessments = Class.Assessment.objects.filter(student=student, class_assessment__in=classes)
+            except ObjectDoesNotExist:
+                continue
+
+            points[student.username] = sum(assessment.point_evaluation for assessment in assessments)
+
+        return points
 
     def get(self, request, id, add_lector=AddLectorForm(), add_update=CreateCourseUpdateForm(), edit_course=None, *args, **kwargs):
         if not (course := self._get_course(id)):
@@ -221,6 +237,7 @@ class EditCourseView(GroupRequiredMixin, View):
             self.template_name,
             {
                 "course": course,
+                "points": self._get_students_points(course),
                 "updates": self._get_updates(course),
                 "form": add_lector,
                 "CreateUpdateForm": add_update,
