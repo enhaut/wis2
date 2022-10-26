@@ -8,12 +8,14 @@
     <table class="wisTable">
             <thead>
                 <tr>
-                    <th colspan="4">Classes</th>
+                    <th colspan="5">Classes</th>
                 </tr>
                 <tr>
                     <th>Name</th>
                     <th>Type</th>
-                    <th>Date</th>
+                    <th>Date from</th>
+                    <th>Date to</th>
+                    <th>Raw dates</th>
                 </tr>
             </thead>
             <tbody>
@@ -21,7 +23,9 @@
                     <tr class="type_{{ class.type_of_class.shortcut }}">
                         <td><a href="">{{ class.name }}</a></td>
                         <td class="center">{{ class.type_of_class.name }}</td>
-                        <td class="center">{{ class.date|date:"Y-m-d" }}</td>
+                        <td class="center">{{ class.date_from|timesince }}</td>
+                        <td class="center">{{ class.date_to|timeuntil }}</td>
+                        <td class="center">from {{ class.date_from|date:"H:i d.m.Y" }} to {{ class.date_from|date:"H:i d.m.Y" }}</td>
                     </tr>
                 {% endfor %}
             </tbody>
