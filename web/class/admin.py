@@ -97,7 +97,7 @@ class ClassView(GroupRequiredMixin, View):
             }
         )
 
-    def post(self, request, id):
+    def _process_create_class_form(self, request, id):
         form = CreateClassForm(request.POST)
         try:
             course = Course.objects.get(
@@ -119,4 +119,10 @@ class ClassView(GroupRequiredMixin, View):
 
         return self.get(request, id, create_form=form)
 
+    def post(self, request, id):
+        if "form" in request.POST:
+            match request.POST["form"]:
+                case "create_class":
+                    return self._process_create_class_form(request, id)
 
+        return self.get(request, id)
