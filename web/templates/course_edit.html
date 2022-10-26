@@ -5,6 +5,24 @@
 {% block subcontent %}
     <h2>Edit course: {{ course.shortcut }} ({{ course.name }})</h2>
 
+    {% include 'course/updates.html' %}
+
+    {% if request.user|has_group:"Teacher" or request.user|has_group:"Guarantor" %}
+        <link rel="stylesheet" href="{% static 'form.css' %}">
+        <form method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="form" value="add_update">
+            <table>
+                {{ CreateUpdateForm.as_table }}
+                <tr>
+                    <td colspan="2">
+                        <button type="submit">Create</button>
+                    </td>
+                </tr>
+            </table>
+        </form>
+        <br>
+    {% endif %}
 
     {% if request.user|has_group:"Guarantor" %}
     <link rel="stylesheet" href="{% static 'table.css' %}">

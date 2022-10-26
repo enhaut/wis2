@@ -1,0 +1,12 @@
+<div class="updates">
+    <h2>Updates:</h2>
+    {% for update in updates %}
+        <div class="update">
+            <h3>{{ update.title }}:</h3>
+            <p style="font-size: 13px;margin-left: 1em">
+                <b>{{ update.date|date:"d.m.Y" }}</b>: {{ update.description|safe }}
+            </p>
+        </div>
+    {% endfor %}
+</div>
+<br>
