@@ -36,7 +36,7 @@ tr.type_E {
 tr.type_L {
   background-color: #e0ffe0;
 }
-tr.type_EX {
+tr.type_Ex, tr.type_HE {
   background-color: #ffe6cc;
 }
 td.center {
