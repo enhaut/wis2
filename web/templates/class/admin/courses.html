@@ -1,0 +1,32 @@
+{% extends "class/class.html" %}
+{% load static %}
+
+{% block subcontent %}
+    <link rel="stylesheet" href="{% static 'table.css' %}">
+    <link rel="stylesheet" href="{% static 'button.css' %}">
+
+    <table class="wisTable">
+            <thead>
+                <tr>
+                    <th colspan="4">Courses</th>
+                </tr>
+                <tr>
+                    <th>Abrv</th>
+                    <th>Title</th>
+                    <th>Type</th>
+                    <th>Role</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for course in courses %}
+                    <tr class="type_{{ course.type_of_course.shortcut }}">
+                        <td><b>{{ course.shortcut }}</b></td>
+                        <td><a href="{% url 'view_classes' id=course.shortcut %}">{{ course.name }}</a></td>
+                        <td class="center">{{ course.type_of_course.shortcut }}</td>
+                        <td class="center">x</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+    </table>
+
+{% endblock %}
