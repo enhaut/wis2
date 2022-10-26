@@ -61,6 +61,11 @@ class Course(models.Model):
 
 
 class CourseUpdate(models.Model):
-    published_by = models.ForeignKey(User, on_delete=models.CASCADE)
-    description = models.CharField(max_length=100)
+    published_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    title = models.CharField(max_length=50)
+    description = models.TextField(max_length=1000)
     date = models.DateTimeField()
+
+    class Meta:
+        ordering = ["-date"]
