@@ -10,6 +10,8 @@ from django import forms
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 
+from datetime import datetime
+
 import sys
 sys.path.append('..')
 from login.models import User
@@ -124,6 +126,30 @@ class RemoveLectorForm(forms.Form):
     )
 
 
+class CreateCourseUpdateForm(ModelForm):
+    class Meta:
+        model = models.CourseUpdate
+        fields = ["title", "date", "description"]
+        widgets = {
+            "title": forms.TextInput(
+                attrs={
+                    "value": "Update #"
+                }
+            ),
+            "date": forms.DateTimeInput(
+                attrs={
+                    "type": "datetime-local",
+                    "value": datetime.now().strftime("%Y-%m-%dT%H:%M")  #"2018-06-12T19:30"
+                }
+            ),
+            "description": forms.Textarea(
+                attrs={
+                    "placeholder": "HTML input is supported"
+                }
+            )
+        }
+
+
 class CreateCourseView(GroupRequiredMixin, View):
     template_name = "course_create.html"
 
@@ -162,11 +188,28 @@ class EditCourseView(GroupRequiredMixin, View):
         except (ObjectDoesNotExist, KeyError, IndexError):
             return []
 
-    def get(self, request, id, add_lector=AddLectorForm(), *args, **kwargs):
+    def _get_updates(self, course: models.Course):
+        try:
+            return models.CourseUpdate .objects.filter(
+                course=course
+            )
+        except ObjectDoesNotExist:
+            return []
+
+    def get(self, request, id, add_lector=AddLectorForm(), add_update=CreateCourseUpdateForm(), *args, **kwargs):
         if not (course := self._get_course(id)):
             return HttpResponseNotFound(f"Course {id} could not be found!")
 
-        return render(request, self.template_name, {"course": course, "form": add_lector})
+        return render(
+            request,
+            self.template_name,
+            {
+                "course": course,
+                "updates": self._get_updates(course),
+                "form": add_lector,
+                "CreateUpdateForm": add_update
+            }
+        )
 
     def _process_add_lector_form(self, request, id):
         form = AddLectorForm(request.POST)
@@ -197,6 +240,27 @@ class EditCourseView(GroupRequiredMixin, View):
 
         return self.get(request, id)
 
+    def _process_add_update_form(self, request, id):
+        form = CreateCourseUpdateForm(request.POST)
+
+        try:
+            course = models.Course.objects.filter(
+                Q(shortcut=id, lectors=request.user) | Q(shortcut=id, guarantor=request.user)
+            )
+        except ObjectDoesNotExist:
+            form.add_error("description", "You are not teacher/guarantor")
+            course = None
+
+        if form.is_valid() and course:
+            update = form.save(commit=False)
+            update.published_by = request.user
+            update.course = course[0]
+            update.save()
+
+            form = CreateCourseUpdateForm()
+
+        return self.get(request, id, add_update=form)
+
     def post(self, request, id, *args, **kwargs):
         if "form" in request.POST:
             match request.POST["form"]:
@@ -204,6 +268,8 @@ class EditCourseView(GroupRequiredMixin, View):
                     return self._process_add_lector_form(request, id)
                 case "remove_lector":
                     return self._process_remove_lector_form(request, id)
+                case "add_update":
+                    self._process_add_update_form(request, id)
 
         return self.get(request, id)
 
