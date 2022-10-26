@@ -4,7 +4,9 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.views.generic import View
 from braces.views import GroupRequiredMixin
+from django.core.exceptions import ValidationError
 from django.core.exceptions import ObjectDoesNotExist
+from django.utils.translation import gettext_lazy as _
 
 
 from datetime import datetime, timedelta
@@ -58,6 +60,24 @@ class CreateClassForm(forms.ModelForm):
                 }
             )
         }
+
+
+def validate_class_exists(id):
+    try:
+        models.Class.objects.get(pk=id)
+    except ObjectDoesNotExist:
+        raise ValidationError(
+            _(f'{id} does not exist')
+        )
+
+
+class RemoveClassForm(forms.Form):
+    id = forms.IntegerField(
+        label='id',
+        validators=[
+            validate_class_exists,
+        ]
+    )
 
 
 class ClassView(GroupRequiredMixin, View):
@@ -119,10 +139,20 @@ class ClassView(GroupRequiredMixin, View):
 
         return self.get(request, id, create_form=form)
 
+    def _process_remove_class_form(self, request, id):
+        form = RemoveClassForm(request.POST)
+        if form.is_valid():
+            obj = models.Class.objects.get(pk=form.data["id"])
+            obj.delete()
+
+        return self.get(request, id)
+
     def post(self, request, id):
         if "form" in request.POST:
             match request.POST["form"]:
                 case "create_class":
                     return self._process_create_class_form(request, id)
+                case "remove_class":
+                    return self._process_remove_class_form(request, id)
 
         return self.get(request, id)

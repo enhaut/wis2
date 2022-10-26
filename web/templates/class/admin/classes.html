@@ -10,7 +10,7 @@
     <table class="wisTable">
             <thead>
                 <tr>
-                    <th colspan="5">Classes</th>
+                    <th colspan="{% if request.user|has_group:'Guarantor'  %}6{% else %}5{% endif %}">Classes</th>
                 </tr>
                 <tr>
                     <th>Name</th>
@@ -18,6 +18,9 @@
                     <th>Date from</th>
                     <th>Date to</th>
                     <th>Raw dates</th>
+                    {% if request.user|has_group:"Guarantor"  %}
+                        <th>Actions</th>
+                    {% endif %}
                 </tr>
             </thead>
             <tbody>
@@ -28,6 +31,17 @@
                         <td class="center">{{ class.date_from|timesince }}</td>
                         <td class="center">{{ class.date_to|timeuntil }}</td>
                         <td class="center">from {{ class.date_from|date:"H:i d.m.Y" }} to {{ class.date_from|date:"H:i d.m.Y" }}</td>
+                        {% if request.user|has_group:"Guarantor"  %}
+                            <td>
+                                <form id="remove_class" method="POST">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="id" value="{{ class.id }}">
+                                    <input type="hidden" name="form" value="remove_class">
+                                    <button type="submit">Remove</button>
+                                    {{ form.remove.errors }}
+                                </form>
+                            </td>
+                        {% endif %}
                     </tr>
                 {% endfor %}
             </tbody>
