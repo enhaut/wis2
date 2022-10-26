@@ -4,7 +4,7 @@
 
 {% block subcontent %}
     <link rel="stylesheet" href="{% static 'table.css' %}">
-    <link rel="stylesheet" href="{% static 'approve.css' %}">
+    <link rel="stylesheet" href="{% static 'button.css' %}">
 
     {% if request.user|has_group:"Guarantor" %}
         <table class="wisTable">
@@ -79,7 +79,7 @@
                         <td class="center">{{ course.type_of_course.shortcut }}</td>
                         <td class="center">{{ course.price }}</td>
                         <script src="{% static 'onclick.js' %}"></script>
-                        <td class="extra">
+                        <td class="center">
                             <button id="tick" onclick="hide_and_approve('subject_{{ course.type_of_course.shortcut }}'); delete_row(this); style.display = 'none'">
                                 <a href="{% url 'approve_course' id=course.shortcut %}">&#9745</a>
                             </button>

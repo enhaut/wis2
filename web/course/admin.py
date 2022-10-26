@@ -7,7 +7,6 @@ from braces.views import GroupRequiredMixin
 from django.core.exceptions import ObjectDoesNotExist
 
 from . import models
-from .models import Course
 
 
 class CourseAdminView(GroupRequiredMixin, View):
@@ -107,7 +106,16 @@ class ApproveCourseView(GroupRequiredMixin, View):
     raise_exception = True
 
     def get(self, request, id, *args, **kwargs):
-        course = Course.objects.get(shortcut=id)
-        #course.approved_by = request.user
-        course.save()
+        course = {}
+        courses = models.Course.objects.get(shortcut=id)
+        #courses.approved_by = request.user
+        courses.save()
+        try:
+            course["approved"] = models.Course.objects.filter(
+                Q(shortcut=id)
+            )
+        except ObjectDoesNotExist:
+            course["approved"] = []
+            return HttpResponse(status=404)
+
         return HttpResponse(status=204)
