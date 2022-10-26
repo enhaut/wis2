@@ -108,7 +108,7 @@ class ApproveCourseView(GroupRequiredMixin, View):
     def get(self, request, id, *args, **kwargs):
         course = {}
         courses = models.Course.objects.get(shortcut=id)
-        #courses.approved_by = request.user
+        courses.approved_by = request.user
         courses.save()
         try:
             course["approved"] = models.Course.objects.filter(
