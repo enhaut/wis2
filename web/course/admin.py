@@ -150,6 +150,12 @@ class CreateCourseUpdateForm(ModelForm):
         }
 
 
+class EditCourseForm(ModelForm):
+    class Meta:
+        model = models.Course
+        fields = ["name", "type_of_course", "description", "price"]
+
+
 class CreateCourseView(GroupRequiredMixin, View):
     template_name = "course_create.html"
 
@@ -196,9 +202,19 @@ class EditCourseView(GroupRequiredMixin, View):
         except ObjectDoesNotExist:
             return []
 
-    def get(self, request, id, add_lector=AddLectorForm(), add_update=CreateCourseUpdateForm(), *args, **kwargs):
+    def get(self, request, id, add_lector=AddLectorForm(), add_update=CreateCourseUpdateForm(), edit_course=None, *args, **kwargs):
         if not (course := self._get_course(id)):
             return HttpResponseNotFound(f"Course {id} could not be found!")
+
+        if not edit_course:
+            edit_course = EditCourseForm(
+                initial={
+                    "name": course.name,
+                    "type_of_course": course.type_of_course,
+                    "description": course.description,
+                    "price": course.price
+                }
+            )
 
         return render(
             request,
@@ -207,7 +223,8 @@ class EditCourseView(GroupRequiredMixin, View):
                 "course": course,
                 "updates": self._get_updates(course),
                 "form": add_lector,
-                "CreateUpdateForm": add_update
+                "CreateUpdateForm": add_update,
+                "EditCourseForm": edit_course
             }
         )
 
@@ -261,6 +278,24 @@ class EditCourseView(GroupRequiredMixin, View):
 
         return self.get(request, id, add_update=form)
 
+    def _process_edit_course_form(self, request, id):
+        form = EditCourseForm(request.POST)
+        try:
+            course = models.Course.objects.filter(
+                Q(shortcut=id, guarantor=request.user)
+            )
+            form = EditCourseForm(request.POST, instance=course[0])
+        except ObjectDoesNotExist:
+            form.add_error("title", "You are not guarantor")
+            course = None
+
+        if form.is_valid() and course:
+            form.save()
+
+            form = CreateCourseUpdateForm()
+
+        return self.get(request, id, edit_course=form)
+
     def post(self, request, id, *args, **kwargs):
         if "form" in request.POST:
             match request.POST["form"]:
@@ -270,6 +305,8 @@ class EditCourseView(GroupRequiredMixin, View):
                     return self._process_remove_lector_form(request, id)
                 case "add_update":
                     self._process_add_update_form(request, id)
+                case "edit_course":
+                    self._process_edit_course_form(request, id)
 
         return self.get(request, id)
 

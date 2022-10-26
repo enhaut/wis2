@@ -75,4 +75,28 @@
             </tbody>
         </table>
     {% endif %}
+
+    {% if request.user|has_group:"Guarantor" %}
+        <h2>Edit course:</h2>
+        <form method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="form" value="edit_course">
+            <table>
+                <tr>
+                    <td><b>Approved by:</b></td>
+                    <td>
+                        {% if course.approved_by %}
+                            {{ course.approved.first_name }} {{ course.approved.last_name }} ({{ course.approved_by.usermame }})
+                        {% endif %}
+                    </td>
+                </tr>
+                {{ EditCourseForm.as_table }}
+                <tr>
+                    <td colspan="2">
+                        <button type="submit">Edit</button>
+                    </td>
+                </tr>
+            </table>
+        </form>
+    {% endif %}
 {% endblock %}
