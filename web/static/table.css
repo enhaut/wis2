@@ -30,6 +30,15 @@ tr.type_V, tr.type_PVA, tr.type_PVT {
 tr.type_P {
   background-color: #ffdead;
 }
+tr.type_E {
+  background-color: #e8ffff;
+}
+tr.type_L {
+  background-color: #e0ffe0;
+}
+tr.type_EX {
+  background-color: #ffe6cc;
+}
 td.center {
   align-content: center;
 }
