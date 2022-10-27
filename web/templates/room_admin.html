@@ -1,0 +1,34 @@
+{% extends "rooms.html" %}
+{% load static %}
+{% load has_group %}
+
+{% block subcontent %}
+    <link rel="stylesheet" href="{% static 'room/rooms.css' %}">
+    {% if request.user|has_group:"Administrator" %}
+        <h2> Zoznam miestností </h2>
+        <table class="wisTable">
+            <thead>
+                <tr>
+                    <th>Skr</th>
+                    <th>Názov</th>
+                    <th>Kapacita</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for room in rooms %}
+                    <tr>
+                        <td><b><a href="{% url 'room_edit' id=room.shortcut %}">{{ room.shortcut }}</a></b></td>
+                        <td>{{ room.name }}</td>
+                        <td class="center">{{ room.capacity }}</td>
+                        <td><a href="{{ room.shortcut }}/delete">Delete</a></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+
+    <div class="container">
+        <a class="button" tabindex="1" role="menuitem" href="{% url 'room_add' %}">Vytvoriť novú miestnosť</a>
+    </div>
+{% endblock %}

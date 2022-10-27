@@ -1,0 +1,14 @@
+{% extends "rooms.html" %}
+{% load static %}
+
+{% block subcontent %}
+    <link rel="stylesheet" href="{% static 'room/room_edit.css' %}">
+    <h2>Create new room</h2>
+    <form method="post">
+        {% csrf_token %}
+        <table>
+            {{ CreateForm.as_table }}
+        </table>
+        <button type="submit">Create</button>
+    </form>
+{% endblock %}
