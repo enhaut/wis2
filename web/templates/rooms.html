@@ -1,0 +1,38 @@
+{% extends "index.html" %}
+
+{% load static %}
+{% block menu %}
+        <li>
+            <a style="position:absolute; right: 70px" class="menubutton" href="{% url 'logout' %}">
+                <span style="font-size:24px;line-height:14px;font-weight:normal">&nbsp;⍈&nbsp;</span>
+            </a>
+        </li>
+
+{% endblock %}
+{% block content %}
+    {% block subcontent %}
+     <link rel="stylesheet" href="{% static 'table.css' %}">
+        <table class="wisTable">
+            <thead>
+                <tr>
+                    <th colspan="3">Miestnosti</th>
+                </tr>
+                <tr>
+                    <th>Skratka</th>
+                    <th>Názov</th>
+                    <th>Kapacita</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for room in rooms.administrator %}
+                    <tr class="type_{{ room.shortcut }}">
+                        <td><b>{{ room.shortcut }}</b></td>
+                        <td><a href="{% url 'room_edit' id=room.shortcut %}"><a href="{% url 'room_edit' id=room.shortcut %}">{{ room.name }}</a></a></td>
+                        <td class="center">{{ room.shortcut }}</td>
+                        <td class="center">{{ room.capacity }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endblock %}
+{% endblock %}

@@ -1,0 +1,39 @@
+h2{
+    margin: 15px 20px;
+    font-size: 1.8em;
+}
+
+table{
+    margin-left: 20px;
+}
+
+th > label{
+    float:left;
+    font-size: 1em;
+}
+
+th{
+    font-size: 1.4em;
+}
+
+td > input{
+    font-size: 1.3em;
+}
+
+button
+{
+    font-weight: bolder;
+    font-size: 20px;
+    color: white;
+    border-radius: 15px;
+    margin: 30px 120px;
+    width: auto;
+    max-width: 450px;
+    padding: 10px 40px;
+	box-shadow: 0 4px 6px #ccc;
+    background: #3498db;
+}
+button:hover, .button:focus
+{
+    color: yellow;
+}

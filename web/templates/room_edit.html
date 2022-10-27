@@ -1,0 +1,20 @@
+{% extends "rooms.html" %}
+{% load static %}
+{% load get_item %}
+
+{% block subcontent %}
+    <link rel="stylesheet" href="{% static 'room/room_edit.css' %}">
+    <h2>Edit room: {{ room.shortcut}} ({{ room.name}})</h2>
+    <form method="POST">
+        {% csrf_token %}
+        <input type="hidden" name="form" value="edit_room">
+        <table>
+            {{ EditRoomForm.as_table }}
+            <tr>
+                <td colspan="2">
+                    <button type="submit">Edit room</button>
+                </td>
+            </tr>
+        </table>
+    </form>
+{% endblock %}

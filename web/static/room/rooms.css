@@ -1,0 +1,60 @@
+h2{
+  margin-left: 20px;
+  margin-bottom: 15px;
+  font-size: 2em;
+}
+.container > .button{
+  width:160px;
+  margin-left:100px;
+}
+ table {
+  font-family: Verdana, Geneva, sans-serif;
+  border: 2px solid #999999;
+  text-align: left;
+  border-collapse: collapse;
+   padding-top: 100px;
+   margin-left: 20px;
+     width: auto;
+   max-width: 500px;
+   overflow: hidden;
+}
+
+table td, table th {
+  border: 0.5px solid #000000;
+  padding: 3px 2px;
+}
+table tbody td {
+  font-size: 15px;
+  padding-right: 2em;
+}
+table thead {
+  background: #ADD8E6;
+}
+table thead th {
+  font-size: 20px;
+  font-weight: bold;
+  width:33%;
+  color: #000000;
+  text-align: left;
+}
+table tfoot td {
+  font-size: 14px;
+}
+tr.type_V, tr.type_PVA, tr.type_PVT {
+  background-color: #f7f7af;
+}
+tr.type_P {
+  background-color: #ffdead;
+}
+td.center {
+  align-content: center;
+}
+tr a:hover {
+  text-decoration: underline;
+}
+tr a:visited {
+  color: #003365;
+}
+tr a {
+    text-decoration: none;
+}
