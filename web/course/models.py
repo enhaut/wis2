@@ -12,10 +12,17 @@ class RegistrationSettingsBase(models.Model):
     class Meta:
         abstract = True
 
-    mandatory = models.BinaryField(default=0)
+    mandatory = models.BooleanField(default=False)
+    auto_approve = models.BooleanField(default=True)
     capacity = models.IntegerField(null=True)
     opens = models.DateTimeField()
     closes = models.DateTimeField()
+
+    def save(self, *args, **kwargs):
+        if self.opens > self.closes:
+            raise ValidationError("Invalid date range!")
+
+        super().save(*args, **kwargs)
 
 
 class RegistrationSettings(RegistrationSettingsBase):

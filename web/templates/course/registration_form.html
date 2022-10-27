@@ -1,0 +1,12 @@
+{% load static %}
+
+<link rel="stylesheet" href="{% static 'table.css' %}">
+<link rel="stylesheet" href="{% static 'form.css' %}">
+<link rel="stylesheet" href="{% static 'button.css' %}">
+<form method="post">
+    {% csrf_token %}
+    <table>
+        {{ RegistrationForm.as_table }}
+    </table>
+    <button type="submit">Update</button>
+</form>

@@ -11,6 +11,7 @@ from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 
 from datetime import datetime
+from django.utils.timezone import make_aware, get_current_timezone
 
 import sys
 sys.path.append('..')
@@ -349,3 +350,116 @@ class ApproveCourseView(GroupRequiredMixin, View):
             return HttpResponse(status=404)
 
         return HttpResponse(status=204)
+
+
+class RegistrationForm(ModelForm):
+    class Meta:
+        model = models.RegistrationSettings
+        fields = ["opens", "closes", "mandatory", "auto_approve", "capacity"]
+        widgets = {
+            "opens": forms.DateTimeInput(
+                attrs={
+                    "type": "datetime-local",
+                    "value": datetime.now().strftime("%Y-%m-%dT%H:%M")
+                }
+            ),
+            "closes": forms.DateTimeInput(
+                attrs={
+                    "type": "datetime-local",
+                    "value": datetime.now().strftime("%Y-%m-%dT%H:%M")
+                }
+            ),
+            "capacity": forms.NumberInput(
+                attrs={
+                    "min": 0
+                }
+            )
+        }
+
+
+class RegistrationSettingsView(GroupRequiredMixin, View):
+    template_name = "course/registration.html"
+
+    group_required = [u"Guarantor"]
+    redirect_unauthenticated_users = False
+    raise_exception = True
+
+    def _get_course(self, request, id):
+        try:
+            return models.Course.objects.get(
+                shortcut=id,
+                guarantor=request.user
+            )
+        except ObjectDoesNotExist:
+            return None
+
+    def _get_form_values(self, course):
+        if course.registration:
+            return {
+                "opens": course.registration.opens,
+                "closes": course.registration.closes,
+                "mandatory": course.registration.mandatory,
+                "auto_approve": course.registration.auto_approve,
+                "capacity": course.registration.capacity,
+            }
+        else:
+            return {
+                "opens": datetime.now(),
+                "closes": datetime.now()
+            }
+
+    def get(self, request, id, form=None, *args, **kwargs):
+        if not (course := self._get_course(request, id)):
+            return HttpResponseNotFound(f"Course {id} could not be found!")
+
+        if form is None:
+            form = RegistrationForm(
+                initial=self._get_form_values(course)
+            )
+
+        return render(
+            request,
+            self.template_name,
+            {
+                "RegistrationForm": form,
+                "course": course
+            }
+        )
+
+    def post(self, request, id):
+        form = RegistrationForm(request.POST)
+
+        if not (course := self._get_course(request, id)):
+            return HttpResponseNotFound(f"Course {id} could not be found!")
+
+        if form.is_valid():
+            if not course.registration:
+                obj = form.save()
+            else:
+                obj = course.registration
+                obj.mandatory = form.data.get("mandatory", False) is not False
+                obj.auto_approve = form.data.get("auto_approve", False) is not False
+                obj.capacity = int(form.data["capacity"])
+                obj.opens = make_aware(
+                    datetime.strptime(form.data["opens"], "%Y-%m-%dT%H:%M"),
+                    get_current_timezone(),
+                    False
+                )
+
+                obj.closes = make_aware(
+                    datetime.strptime(form.data["closes"], "%Y-%m-%dT%H:%M"),
+                    get_current_timezone(),
+                    False
+                )
+                try:
+                    obj.save()
+                except ValidationError:
+                    form.add_error("closes", "Invalid date range")
+
+            if not form.errors:
+                course.registration = obj
+                course.save()
+                form = None  # data will be set by get method
+
+        return self.get(request, id, form)
+
