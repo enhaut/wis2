@@ -40,7 +40,7 @@ class CoursesView(GroupRequiredMixin, View):
 class CreateClassForm(forms.ModelForm):
     class Meta:
         model = models.Class
-        fields = ["type_of_class", "name", "description", "date_from", "date_to"]
+        fields = ["type", "name", "description", "date_from", "date_to"]
         widgets = {
             "date_from": forms.DateTimeInput(
                 attrs={
@@ -90,7 +90,7 @@ class ClassView(GroupRequiredMixin, View):
     def _get_classes(self, request, id):
         try:
             classes = models.Class.objects.filter(
-                courses_class=id
+                course=id
             )
         except ObjectDoesNotExist:
             return []
@@ -132,7 +132,7 @@ class ClassView(GroupRequiredMixin, View):
 
         if form.is_valid():
             obj = form.save(commit=False)
-            obj.courses_class = course
+            obj.course = course
 
             obj.save()
             form = CreateClassForm()

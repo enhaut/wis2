@@ -21,8 +21,8 @@ class TypeOfClass(models.Model):
 
 
 class Class(models.Model):
-    courses_class = models.ForeignKey(Course, on_delete=models.CASCADE)
-    type_of_class = models.ForeignKey(TypeOfClass, on_delete=models.RESTRICT)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    type = models.ForeignKey(TypeOfClass, on_delete=models.RESTRICT)
     name = models.CharField(max_length=50)
     description = models.TextField(max_length=10_000)
     date_from = models.DateTimeField()
@@ -46,7 +46,7 @@ class RegistrationToClass(models.Model):
 
 class Assessment(models.Model):
     entered_points_by = models.ForeignKey(User, on_delete=models.SET_NULL, related_name="evaluates", null=True)
-    class_assessment = models.ForeignKey(Class, on_delete=models.RESTRICT)
+    evaluated_class = models.ForeignKey(Class, on_delete=models.RESTRICT)
     point_evaluation = models.FloatField()
     published_date = models.DateTimeField()
     student = models.ForeignKey(User, on_delete=models.CASCADE)
