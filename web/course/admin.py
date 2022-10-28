@@ -199,7 +199,7 @@ class EditCourseView(GroupRequiredMixin, View):
 
     def _get_updates(self, course: models.Course):
         try:
-            return models.CourseUpdate .objects.filter(
+            return models.CourseUpdate.objects.filter(
                 course=course
             )
         except ObjectDoesNotExist:
@@ -210,8 +210,8 @@ class EditCourseView(GroupRequiredMixin, View):
         for student in course.students.all():
             points[student.username] = 0
             try:
-                classes = Class.Class.objects.filter(courses_class=course)
-                assessments = Class.Assessment.objects.filter(student=student, class_assessment__in=classes)
+                classes = Class.Class.objects.filter(course=course)
+                assessments = Class.Assessment.objects.filter(student=student, evaluated_class__in=classes)
             except ObjectDoesNotExist:
                 continue
 

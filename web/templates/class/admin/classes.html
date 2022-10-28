@@ -25,9 +25,9 @@
             </thead>
             <tbody>
                 {% for class in classes %}
-                    <tr class="type_{{ class.type_of_class.shortcut }}">
+                    <tr class="type_{{ class.type.shortcut }}">
                         <td><a href="">{{ class.name }}</a></td>
-                        <td class="center">{{ class.type_of_class.name }}</td>
+                        <td class="center">{{ class.type.name }}</td>
                         <td class="center">{{ class.date_from|timesince }}</td>
                         <td class="center">{{ class.date_to|timeuntil }}</td>
                         <td class="center">from {{ class.date_from|date:"H:i d.m.Y" }} to {{ class.date_from|date:"H:i d.m.Y" }}</td>
