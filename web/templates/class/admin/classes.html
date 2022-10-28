@@ -17,7 +17,6 @@
                     <th>Type</th>
                     <th>Date from</th>
                     <th>Date to</th>
-                    <th>Raw dates</th>
                     {% if request.user|has_group:"Guarantor"  %}
                         <th>Actions</th>
                     {% endif %}
@@ -26,11 +25,10 @@
             <tbody>
                 {% for class in classes %}
                     <tr class="type_{{ class.type.shortcut }}">
-                        <td><a href="">{{ class.name }}</a></td>
+                        <td><a href="{% url 'edit_class' id=class.course.shortcut class_id=class.id %}">{{ class.name }}</a></td>
                         <td class="center">{{ class.type.name }}</td>
-                        <td class="center">{{ class.date_from|timesince }}</td>
-                        <td class="center">{{ class.date_to|timeuntil }}</td>
-                        <td class="center">from {{ class.date_from|date:"H:i d.m.Y" }} to {{ class.date_from|date:"H:i d.m.Y" }}</td>
+                        <td class="center">{{ class.date_from|date:"H:i d.m.Y" }}</td>
+                        <td class="center">{{ class.date_from|date:"H:i d.m.Y" }}</td>
                         {% if request.user|has_group:"Guarantor"  %}
                             <td>
                                 <form id="remove_class" method="POST">

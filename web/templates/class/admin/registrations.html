@@ -1,0 +1,10 @@
+{% extends "class/class.html" %}
+{% load static %}
+
+{% block subcontent %}
+    <h3>Registration settings for {{ class }}</h3>
+    {% include 'course/registration_form.html' %}
+    <div class="container">
+        <a class="button" tabindex="1" role="menuitem" href="{% url 'edit_class' id=class.course.shortcut class_id=class.id %}">Back to {{ class }} class</a>
+    </div>
+{% endblock %}
