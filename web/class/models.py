@@ -31,6 +31,9 @@ class Class(models.Model):
     rooms = models.ManyToManyField(Room)
     students = models.ManyToManyField(User, through="RegistrationToClass")
 
+    def __str__(self):
+        return f"{self.course.shortcut}/{self.name}"
+
     def save(self, *args, **kwargs):
         if self.date_from > self.date_to:
             raise ValidationError("Date to cannot be bigger than date from!")
@@ -42,6 +45,9 @@ class RegistrationToClass(models.Model):
     accepted = models.BooleanField(default=1)
     class_id = models.ForeignKey(Class, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = (("class_id", "user"), )
 
 
 class Assessment(models.Model):

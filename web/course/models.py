@@ -66,6 +66,9 @@ class Course(models.Model):
     lectors = models.ManyToManyField(User, related_name="teaches")
     students = models.ManyToManyField(User, related_name="have_registred")
 
+    def __str__(self):
+        return f"{self.shortcut} ({self.name})"
+
 
 class CourseUpdate(models.Model):
     published_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)

@@ -1,0 +1,80 @@
+{% extends "class/class.html" %}
+{% load static %}
+{% load has_group %}
+{% load get_item %}
+
+{% block subcontent %}
+    <link rel="stylesheet" href="{% static 'form.css' %}">
+    <link rel="stylesheet" href="{% static 'table.css' %}">
+    <link rel="stylesheet" href="{% static 'button.css' %}">
+
+     <table class="wisTable">
+         <thead>
+            <tr>
+                <th colspan="5">Students</th>
+            </tr>
+            <tr>
+                <th>Login</th>
+                <th>Name</th>
+                <th>Points</th>
+                <th>Accepted</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for student in students %}
+                <tr class="type_{% if student.registrationtoclass_set.get.accepted %}V{% else %}P{% endif %}">
+                    <td><a href="">{{ student.username }}</a></td>
+                    <td class="center">{{ student.first_name }} {{ student.last_name }}</td>
+                    <td class="center">{{ points|get_item:student.username }}</td>
+                    <td>
+                        {% if request.user|has_group:"Guarantor"  %}
+                            {% if student.registrationtoclass_set.get.accepted %}
+                                <input type="checkbox" checked disabled>
+                            {% else %}
+                                <form id="accept_student" method="POST">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="id" value="{{ course.class.shortcut }}">
+                                    <input type="hidden" name="id" value="{{ student.class_id }}">
+                                    <input type="hidden" name="student" value="{{ student.username }}">
+                                    <input type="hidden" name="form" value="accept_student">
+                                    <button type="submit">Accept</button>
+                                </form>
+                            {% endif %}
+                        {% else %}
+                            {% if student.registrationtoclass_set.get.accepted %}
+                                <input type="checkbox" checked disabled>
+                            {% else %}
+                                <input type="checkbox" disabled>
+                            {% endif %}
+                        {% endif %}
+                    </td>
+                    <td>TODO: evaluate</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <br/>
+    <form method="POST">
+        {% csrf_token %}
+        <table>
+            <thead>
+                <tr>
+                    <th colspan="2" style="font-weight: normal">Edit class <b>{{ class }}</b>:</th>
+                </tr>
+            </thead>
+            {{ CreateClassForm.as_table }}
+            <tr>
+                {% if request.user|has_group:"Guarantor" %}
+                    <td colspan="2">
+                        <button type="submit">Update</button>
+                    </td>
+                {% endif %}
+            </tr>
+        </table>
+        <input type="hidden" name="form" value="edit_class">
+    </form>
+    <div class="container">
+        <a class="button" tabindex="1" role="menuitem" href="{% url 'class_reg' id=class.course.shortcut class_id=class.id %}">Registrations</a>
+    </div>
+{% endblock %}
