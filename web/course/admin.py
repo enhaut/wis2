@@ -377,14 +377,67 @@ class RegistrationForm(ModelForm):
         }
 
 
-class RegistrationSettingsView(GroupRequiredMixin, View):
-    template_name = "course/registration.html"
-
+class RegistrationSettingsViewBase(GroupRequiredMixin, View):
     group_required = [u"Guarantor"]
     redirect_unauthenticated_users = False
     raise_exception = True
 
-    def _get_course(self, request, id):
+    def _get_form_values(self, unit):
+        if unit.registration:
+            return {
+                "opens": unit.registration.opens,
+                "closes": unit.registration.closes,
+                "mandatory": unit.registration.mandatory,
+                "auto_approve": unit.registration.auto_approve,
+                "capacity": unit.registration.capacity,
+            }
+        else:
+            return {
+                "opens": datetime.now().strftime("%Y-%m-%d %H:%M"),
+                "closes": datetime.now().strftime("%Y-%m-%d %H:%M")
+            }
+
+    @staticmethod
+    def _process_registration_form(form, unit):
+        if not form.is_valid():
+            return None
+
+        if not unit.registration:
+            registration = form.save()
+        else:
+            registration = unit.registration
+            registration.mandatory = form.data.get("mandatory", False) is not False
+            registration.auto_approve = form.data.get("auto_approve", False) is not False
+            registration.capacity = int(form.data["capacity"])
+            registration.opens = make_aware(
+                datetime.strptime(form.data["opens"], "%Y-%m-%dT%H:%M"),
+                get_current_timezone(),
+                False
+            )
+
+            registration.closes = make_aware(
+                datetime.strptime(form.data["closes"], "%Y-%m-%dT%H:%M"),
+                get_current_timezone(),
+                False
+            )
+            try:
+                registration.save()
+            except ValidationError:
+                form.add_error("closes", "Invalid date range")
+
+        if not form.errors:
+            unit.registration = registration
+            unit.save()
+            form = None  # data will be set by get method
+
+        return form
+
+
+class RegistrationSettingsView(RegistrationSettingsViewBase):
+    template_name = "course/registration.html"
+
+    @staticmethod
+    def _get_course(request, id):
         try:
             return models.Course.objects.get(
                 shortcut=id,
@@ -392,21 +445,6 @@ class RegistrationSettingsView(GroupRequiredMixin, View):
             )
         except ObjectDoesNotExist:
             return None
-
-    def _get_form_values(self, course):
-        if course.registration:
-            return {
-                "opens": course.registration.opens,
-                "closes": course.registration.closes,
-                "mandatory": course.registration.mandatory,
-                "auto_approve": course.registration.auto_approve,
-                "capacity": course.registration.capacity,
-            }
-        else:
-            return {
-                "opens": datetime.now(),
-                "closes": datetime.now()
-            }
 
     def get(self, request, id, form=None, *args, **kwargs):
         if not (course := self._get_course(request, id)):
@@ -432,34 +470,7 @@ class RegistrationSettingsView(GroupRequiredMixin, View):
         if not (course := self._get_course(request, id)):
             return HttpResponseNotFound(f"Course {id} could not be found!")
 
-        if form.is_valid():
-            if not course.registration:
-                obj = form.save()
-            else:
-                obj = course.registration
-                obj.mandatory = form.data.get("mandatory", False) is not False
-                obj.auto_approve = form.data.get("auto_approve", False) is not False
-                obj.capacity = int(form.data["capacity"])
-                obj.opens = make_aware(
-                    datetime.strptime(form.data["opens"], "%Y-%m-%dT%H:%M"),
-                    get_current_timezone(),
-                    False
-                )
-
-                obj.closes = make_aware(
-                    datetime.strptime(form.data["closes"], "%Y-%m-%dT%H:%M"),
-                    get_current_timezone(),
-                    False
-                )
-                try:
-                    obj.save()
-                except ValidationError:
-                    form.add_error("closes", "Invalid date range")
-
-            if not form.errors:
-                course.registration = obj
-                course.save()
-                form = None  # data will be set by get method
+        form = self._process_registration_form(form, course)
 
         return self.get(request, id, form)
 
