@@ -64,10 +64,19 @@ class Course(models.Model):
         ])
     registration = models.ForeignKey(RegistrationSettings, on_delete=models.SET_NULL, null=True, default=None)
     lectors = models.ManyToManyField(User, related_name="teaches")
-    students = models.ManyToManyField(User, related_name="have_registred")
+    students = models.ManyToManyField(User, related_name="have_registred", through="RegistrationToCourse")
 
     def __str__(self):
         return f"{self.shortcut} ({self.name})"
+
+
+class RegistrationToCourse(models.Model):
+    accepted = models.BooleanField(default=1)
+    course_id = models.ForeignKey(Course, on_delete=models.CASCADE)
+    user = models.ForeignKKey(User, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = (("course_id", "user"), )
 
 
 class CourseUpdate(models.Model):
