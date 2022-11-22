@@ -1,0 +1,34 @@
+{% extends "student.html" %}
+{% load static %}
+{% load get_item %}
+
+{% block content %}
+    <link rel="stylesheet" href="{% static 'room/room_edit.css' %}">
+    <h2>Edit student: {{ user.first_name }} {{ user.last_name}}</h2>
+    <form method="POST">
+        {% csrf_token %}
+        <input type="hidden" name="form" value="edit_profile">
+        <table>
+            {{ EditUserForm.as_table }}
+            {{ EditUserForm.errors }}
+            <tr>
+                <td colspan="2">
+                    <button type="submit">Update name</button>
+                </td>
+            </tr>
+        </table>
+    </form>
+    <form method="POST">
+        {% csrf_token %}
+        <input type="hidden" name="form" value="edit_pw">
+        <table>
+            {{ EditPwForm.as_table}}
+            <tr>
+                <td colspan="2">
+                    <p>(automatically logout when password is changed)</p>
+                    <button type="submit">Update password</button>
+                </td>
+            </tr>
+        </table>
+    </form>
+{% endblock %}

@@ -147,7 +147,6 @@ class EditRoomView(GroupRequiredMixin, View):
 
         if form.is_valid() and room:
             form.save()
-
             form = CreateRoomForm()
 
         return self.get(request, id, edit_room=form)
