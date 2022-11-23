@@ -7,6 +7,7 @@ from django.db.models import Q
 from django.forms import ModelForm
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.exceptions import ValidationError
+from django.shortcuts import redirect
 
 import sys
 from django.http import HttpResponseRedirect, HttpResponse, HttpResponseNotFound
@@ -127,8 +128,11 @@ class EditProfileView(GroupRequiredMixin, View):
             user = None
 
         if form.data["password"]:
-            user.set_password("password")
+            user.set_password(form.data["password"])
         user.save()
+
+        if form.data["password"]:
+            return redirect("loginpage")
 
         form = EditPwForm(initial={
             "password": form.data["password"]

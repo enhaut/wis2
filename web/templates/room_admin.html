@@ -4,6 +4,7 @@
 
 {% block subcontent %}
     <link rel="stylesheet" href="{% static 'room/rooms.css' %}">
+    <link rel="stylesheet" href="{% static 'button.css' %}">
     {% if request.user|has_group:"Administrator" %}
         <h2> Zoznam miestností </h2>
         <table class="wisTable">
@@ -21,7 +22,7 @@
                         <td><b><a href="{% url 'room_edit' id=room.shortcut %}">{{ room.shortcut }}</a></b></td>
                         <td>{{ room.name }}</td>
                         <td class="center">{{ room.capacity }}</td>
-                        <td><a href="{{ room.shortcut }}/delete">Delete</a></td>
+                        <td><a href="{{ room.shortcut }}/delete"><button type="submit">Delete</button></a></td>
                     </tr>
                 {% endfor %}
             </tbody>

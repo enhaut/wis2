@@ -5,6 +5,7 @@ from django.http import HttpResponseRedirect, HttpResponse, HttpResponseNotFound
 from django.views.generic import View
 from braces.views import GroupRequiredMixin
 from django.core.exceptions import ObjectDoesNotExist
+from django.shortcuts import redirect
 from django import forms
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
@@ -148,6 +149,7 @@ class EditRoomView(GroupRequiredMixin, View):
         if form.is_valid() and room:
             form.save()
             form = CreateRoomForm()
+            return redirect('room_admin')
 
         return self.get(request, id, edit_room=form)
 
@@ -155,6 +157,6 @@ class EditRoomView(GroupRequiredMixin, View):
         if "form" in request.POST:
             match request.POST["form"]:
                 case "edit_room":
-                    self._process_add_room_form(request, id)
+                    return self._process_add_room_form(request, id)
 
         return self.get(request, id)
