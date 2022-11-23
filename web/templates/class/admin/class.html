@@ -55,6 +55,57 @@
         </tbody>
     </table>
     <br/>
+    <br/>
+    <table class="wisTable">
+        <thead>
+            <tr>
+                <th colspan="4">Dates</th>
+            </tr>
+            <tr>
+                <th>#</th>
+                <th>Date from</th>
+                <th>Date to</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for class_date in classes %}
+                <tr class="type_V">
+                    <td>{{ forloop.counter }}</td>
+                    <td class="center">{{ class_date.date_from|date:"H:i d.m.Y" }}</td>
+                    <td class="center">{{ class_date.date_to|date:"H:i d.m.Y" }}</td>
+                    <td class="center">
+                        <a href="{% url 'remove_date' id=class_date.class_id.course.shortcut class_id=class_date.class_id.id date_id=class_date.id %}">
+                            <button type="submit">Remove</button>
+                        </a>
+                    </td>
+                </tr>
+            {% endfor %}
+            <tr class="type_P">
+                <td></td>
+                <form id="add_date" method="POST">
+                    {% csrf_token %}
+                    <td>
+                        {{ CreateClassDateForm.date_from }}
+                        {{ CreateClassDateForm.date_from.errors }}
+                        <div style="background-color: transparent">
+                        </div>
+                    </td>
+                    <td>
+                        {{ CreateClassDateForm.date_to }}
+                        {{ CreateClassDateForm.date_to.errors }}
+                        <div style="background-color: transparent">
+                        </div>
+                    </td>
+                    <td class="center">
+                        <button type="submit">Add date</button>
+                    </td>
+                    <input type="hidden" name="form" value="add_class_date">
+                </form>
+            </tr>
+        </tbody>
+    </table>
+    <br/>
     <form method="POST">
         {% csrf_token %}
         <table>

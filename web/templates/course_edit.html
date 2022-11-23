@@ -41,8 +41,20 @@
                     <td>{{ student.username }}</td>
                     <td class="center">{{ student.first_name }} {{ student.last_name }}</td>
                     <td class="center"><a href="mailto:{{ student.email }}">{{ student.email }}</a></td>
-                    <td class="center">{{ points|get_item:student.username }}</td>
-                    <td class="center">TODO</td>
+                    <td class="center">
+                        {% if points|get_item:student.username is None %}
+                            -
+                        {% else %}
+                            {{ points|get_item:student.username }}
+                        {% endif %}
+                    </td>
+                    <td class="center">
+                        {% if points|get_item:student.username is None %}
+                            <a href="{% url 'appr_course_reg' id=course.shortcut user=student.username %}">
+                                <button type="submit">Approve</button>
+                            </a>
+                        {% endif %}
+                    </td>
                 </tr>
             {% endfor %}
         </tbody>

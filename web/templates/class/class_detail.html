@@ -1,0 +1,34 @@
+{% extends "class/class.html" %}
+{% load static %}
+
+{% block subcontent %}
+    <link rel="stylesheet" href="{% static 'table.css' %}">
+    <link rel="stylesheet" href="{% static 'button.css' %}">
+    <h3>Detail of {{ class_obj.name }} class for {{ class_obj.course }}</h3>
+
+    <p>Course: {{ class_obj.course_id }}</p>
+    <p>Class type: {{ class_obj.type }}</p>
+    <p>{{ class_obj.description }}</p>
+    <br>
+    <table class="wisTable">
+        <thead>
+            <tr>
+                <th colspan="3">Class dates</th>
+            </tr>
+            <tr>
+                <th>#</th>
+                <th>Date from</th>
+                <th>Date to</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for class_date in class_dates %}
+                <tr class="type_{{ class_obj.type.shortcut }}">
+                    <td>{{ forloop.counter }}</td>
+                    <td class="center">{{ class_date.date_from|date:"H:i d.m.Y" }}</td>
+                    <td class="center">{{ class_date.date_to|date:"H:i d.m.Y" }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
