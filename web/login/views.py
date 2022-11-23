@@ -57,7 +57,7 @@ class EditPwForm(ModelForm):
 class EditProfileView(GroupRequiredMixin, View):
     template_name = "user_edit.html"
 
-    group_required = [u"Student"]  # probably more groups
+    group_required = [u"Student"], [u"Administrator"], [u"Guarantor"], [u"Teacher"]
     redirect_unauthenticated_users = False
     raise_exception = True
 
