@@ -3,6 +3,12 @@
 {% load static %}
 {% block menu %}
         <li>
+            <a class="menubutton" href="{% url 'student' %}">
+                <span style="position:absolute; top:10px; font-size:24px;line-height:14px;font-weight:normal">&nbsp;⌂&nbsp;</span>
+            </a>
+        </li>
+
+        <li>
             <a style="position:absolute; right: 70px" class="menubutton" href="{% url 'logout' %}">
                 <span style="font-size:24px;line-height:14px;font-weight:normal">&nbsp;⍈&nbsp;</span>
             </a>
@@ -10,23 +16,22 @@
 
 {% endblock %}
 {% block content %}
-    <h1>Courses registration</h1>
+    <h1>Registrácia kurzov</h1>
     <link rel="stylesheet" href="{% static 'table.css' %}">
     <link rel="stylesheet" href="{% static 'button.css' %}">
-
-    <p>Available courses for registrations:</p>
+    <br>
     <table class="wisTable">
             <thead>
                 <tr>
-                    <th colspan="6">Courses</th>
+                    <th colspan="6">Ponúkané kurzy</th>
                 </tr>
                 <tr>
-                    <th>Abrv</th>
-                    <th>Title</th>
-                    <th>Type</th>
-                    <th>Registration start</th>
-                    <th>Registration end</th>
-                    <th>Register</th>
+                    <th>Skr</th>
+                    <th>Názov</th>
+                    <th>Typ</th>
+                    <th>Štart registrácie</th>
+                    <th>Koniec registrácie</th>
+                    <th>Registrácia</th>
                 </tr>
             </thead>
             <tbody>
@@ -37,7 +42,7 @@
                         <td class="center">{{ course.type_of_course.shortcut }}</td>
                         <td class="center">{{ course.registration.opens|date:"H:i:s d.m.Y" }}</td>
                         <td class="center">{{ course.registration.closes|date:"H:i:s d.m.Y" }}</td>
-                        <td class="center"><a href="{% url 'course_registrations' subject=course.shortcut %}"><button type="submit">Register</button></a></td>
+                        <td class="center"><a href="{% url 'course_registrations' subject=course.shortcut %}"><button type="submit">Registrovať</button></a></td>
                     </tr>
                 {% endfor %}
                 {% for course in closed %}

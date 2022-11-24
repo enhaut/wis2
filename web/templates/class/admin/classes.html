@@ -10,13 +10,13 @@
     <table class="wisTable">
             <thead>
                 <tr>
-                    <th colspan="{% if request.user|has_group:'Guarantor'  %}6{% else %}5{% endif %}">Classes</th>
+                    <th colspan="{% if request.user|has_group:'Guarantor'  %}6{% else %}5{% endif %}">Termíny</th>
                 </tr>
                 <tr>
-                    <th>Name</th>
-                    <th>Type</th>
+                    <th>Názov</th>
+                    <th>Typ</th>
                     {% if request.user|has_group:"Guarantor"  %}
-                        <th>Actions</th>
+                        <th></th>
                     {% endif %}
                 </tr>
             </thead>
@@ -31,7 +31,7 @@
                                     {% csrf_token %}
                                     <input type="hidden" name="id" value="{{ class.id }}">
                                     <input type="hidden" name="form" value="remove_class">
-                                    <button type="submit">Remove</button>
+                                    <button type="submit">Odstrániť</button>
                                     {{ form.remove.errors }}
                                 </form>
                             </td>
@@ -48,13 +48,13 @@
             <table>
                 <thead>
                     <tr>
-                        <th colspan="2">Add class:</th>
+                        <th colspan="2">Pridať termín:</th>
                     </tr>
                 </thead>
                 {{ CreateClassForm.as_table }}
                 <tr>
                     <td colspan="2">
-                        <button type="submit">Create</button>
+                        <button type="submit">Pridať</button>
                     </td>
                 </tr>
             </table>

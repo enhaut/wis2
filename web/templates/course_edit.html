@@ -4,7 +4,7 @@
 {% load get_item %}
 
 {% block subcontent %}
-    <h2>Edit course: {{ course.shortcut }} ({{ course.name }})</h2>
+    <h2>Upraviť kurz: {{ course.shortcut }} ({{ course.name }})</h2>
 
     {% include 'course/updates.html' %}
 
@@ -16,7 +16,7 @@
             {{ CreateUpdateForm.as_table }}
             <tr>
                 <td colspan="2">
-                    <button type="submit">Create</button>
+                    <button type="submit">Vytvoriť</button>
                 </td>
             </tr>
         </table>
@@ -25,14 +25,14 @@
     <table class="wisTable">
         <thead>
             <tr>
-                <th colspan="5">Registered students</th>
+                <th colspan="5">Registrovaní študenti</th>
             </tr>
             <tr>
                 <th>Login</th>
-                <th>Name</th>
+                <th>Meno</th>
                 <th>Email</th>
-                <th>Points</th>
-                <th>Actions</th>
+                <th>Body</th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
@@ -51,7 +51,12 @@
                     <td class="center">
                         {% if points|get_item:student.username is None %}
                             <a href="{% url 'appr_course_reg' id=course.shortcut user=student.username %}">
-                                <button type="submit">Approve</button>
+                                <button type="submit">Schváliť</button>
+
+                            {% else %}
+                                <a href="{% url 'evaluate_student' id=course.shortcut student_name=student.username %}">
+                                    <button type="submit">Ohodnoť</button>
+                                </a>
                             </a>
                         {% endif %}
                     </td>
@@ -67,12 +72,12 @@
     <table class="wisTable">
             <thead>
                 <tr>
-                    <th colspan="4">Teachers</th>
+                    <th colspan="4">Lektori</th>
                 </tr>
                 <tr>
                     <th>Login</th>
-                    <th>Name</th>
-                    <th>Action</th>
+                    <th>Meno</th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
@@ -89,7 +94,7 @@
                                 {% csrf_token %}
                                 <input type="hidden" name="lector" value="{{ lector.username }}">
                                 <input type="hidden" name="form" value="remove_lector">
-                                <button type="submit">Remove</button>
+                                <button type="submit">Odstrániť lektora</button>
                                 {{ form.remove.errors }}
                             </form>
                         </td>
@@ -104,7 +109,7 @@
                             {{ form.lector.errors }}
                             </div>
                         </td>
-                        <td class="center"><button type="submit">Add lector</button></td>
+                        <td class="center"><button type="submit">Pridať lektora</button></td>
                         <input type="hidden" name="form" value="add_lector">
                     </form>
                 </tr>
@@ -113,7 +118,7 @@
     {% endif %}
 
     {% if request.user|has_group:"Guarantor" %}
-        <h2>Edit course:</h2>
+        <h2>Upraviť kurz:</h2>
         <form method="POST">
             {% csrf_token %}
             <input type="hidden" name="form" value="edit_course">
@@ -129,13 +134,13 @@
                 {{ EditCourseForm.as_table }}
                 <tr>
                     <td colspan="2">
-                        <button type="submit">Edit</button>
+                        <button type="submit">Uprav</button>
                     </td>
                 </tr>
             </table>
         </form>
     <div class="container">
-        <a class="button" tabindex="1" role="menuitem" href="{% url 'registrations' id=course.shortcut %}">Update registrations</a>
+        <a class="button" tabindex="1" role="menuitem" href="{% url 'registrations' id=course.shortcut %}">Aktualizácia registrácií</a>
     </div>
     {% endif %}
 {% endblock %}
