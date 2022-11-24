@@ -407,6 +407,18 @@ class RegistrationSettingsView(RegistrationSettingsViewBase):
 
         return self.get(request, id, class_id, form)
 
+class EvaluateStudentView(GroupRequiredMixin, View):
+        template_name = "evaluate_student.html"
+
+        group_required = [u"Guarantor", u"Teacher"]
+        redirect_unauthenticated_users = False
+        raise_exception = True
+
+        def get(self, request, id, student_name, *args, **kwargs):
+            if request.user.is_authenticated:
+                request.user = student_name
+                course = models.Course.objects.get(shortcut=id)
+                return render(request, "evaluate_student.html", {'course' : course, 'student_name' : student_name})
 
 class RemoveClassDatesView(RegistrationSettingsViewBase):
     def _remove_class_date(self, subject, class_id, date_id):
