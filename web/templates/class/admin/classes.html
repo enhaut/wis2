@@ -15,8 +15,6 @@
                 <tr>
                     <th>Name</th>
                     <th>Type</th>
-                    <th>Date from</th>
-                    <th>Date to</th>
                     {% if request.user|has_group:"Guarantor"  %}
                         <th>Actions</th>
                     {% endif %}
@@ -27,8 +25,6 @@
                     <tr class="type_{{ class.type.shortcut }}">
                         <td><a href="{% url 'edit_class' id=class.course.shortcut class_id=class.id %}">{{ class.name }}</a></td>
                         <td class="center">{{ class.type.name }}</td>
-                        <td class="center">{{ class.date_from|date:"H:i d.m.Y" }}</td>
-                        <td class="center">{{ class.date_from|date:"H:i d.m.Y" }}</td>
                         {% if request.user|has_group:"Guarantor"  %}
                             <td>
                                 <form id="remove_class" method="POST">

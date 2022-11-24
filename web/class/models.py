@@ -25,14 +25,18 @@ class Class(models.Model):
     type = models.ForeignKey(TypeOfClass, on_delete=models.RESTRICT)
     name = models.CharField(max_length=50)
     description = models.TextField(max_length=10_000)
-    date_from = models.DateTimeField()
-    date_to = models.DateTimeField()
     registration = models.ForeignKey(RegistrationSettings, on_delete=models.SET_NULL, null=True)
     rooms = models.ManyToManyField(Room)
     students = models.ManyToManyField(User, through="RegistrationToClass")
 
     def __str__(self):
         return f"{self.course.shortcut}/{self.name}"
+
+
+class ClassDates(models.Model):
+    class_id = models.ForeignKey(Class, on_delete=models.CASCADE)
+    date_from = models.DateTimeField()
+    date_to = models.DateTimeField()
 
     def save(self, *args, **kwargs):
         if self.date_from > self.date_to:
