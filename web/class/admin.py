@@ -16,6 +16,7 @@ import sys
 from . import models
 sys.path.append('..')
 from course.models import Course
+from room.models import Room
 from course.admin import RegistrationSettingsViewBase
 
 
@@ -172,6 +173,12 @@ class AddClassDateForm(forms.ModelForm):
         }
 
 
+class EditRoomForm(forms.ModelForm):
+    class Meta:
+        model = Room
+        fields = ["shortcut"]
+
+
 class EditClassView(GroupRequiredMixin, View):
     template_name = "class/admin/class.html"
 
@@ -228,7 +235,10 @@ class EditClassView(GroupRequiredMixin, View):
             class_id=class_obj
         ).all()
 
-    def get(self, request, id, class_id, edit_form = None, add_class_form = None, *args, **kwargs):
+    def _get_rooms(self, class_obj):
+        return class_obj.rooms.all(), Room.objects.all()
+
+    def get(self, request, id, class_id, edit_form = None, add_class_form = None, add_room_form = None, *args, **kwargs):
         try:
             class_obj = self._get_class(request, id, class_id)
         except (ObjectDoesNotExist, IndexError):
@@ -240,6 +250,11 @@ class EditClassView(GroupRequiredMixin, View):
         if not add_class_form:
             add_class_form = AddClassDateForm()
 
+        if not edit_form:
+            add_room_form = EditRoomForm()
+
+        class_rooms, avail_rooms = self._get_rooms(class_obj)
+
         return render(
             request,
             self.template_name,
@@ -249,7 +264,10 @@ class EditClassView(GroupRequiredMixin, View):
                 "students": class_obj.students.select_related(),
                 "points": self._get_students_points(class_obj),
                 "classes": self._get_class_dates(class_obj),
-                "CreateClassDateForm": add_class_form
+                "CreateClassDateForm": add_class_form,
+                "EditRoomForm": add_room_form,
+                "rooms": class_rooms,
+                "avail_rooms": avail_rooms
             }
         )
 
@@ -322,6 +340,44 @@ class EditClassView(GroupRequiredMixin, View):
 
         return self.get(request, id, class_id, add_class_form=None)
 
+    def _add_room(self, req, id, class_id):
+        form = EditRoomForm(req.POST)
+
+        try:
+            room = Room.objects.get(shortcut=form.data["shortcut"])
+            class_obj = models.Class.objects.get(id=class_id)
+        except ObjectDoesNotExist:
+            form.add_error("shortcut", "Invalid room!")
+            return self.get(req, id, class_id, add_room_form=form)
+
+        if models.Class.objects.filter(rooms=room).exists():
+            form.add_error("shortcut", "Room is already assigned to this course!")
+            return self.get(req, id, class_id, add_room_form=form)
+
+        class_obj.rooms.add(room)
+        class_obj.save()
+
+        return self.get(req, id, class_id, add_room_form=None)
+
+    def _remove_room(self, req, id, class_id):
+        form = EditRoomForm(req.POST)
+
+        try:
+            room = Room.objects.get(shortcut=form.data["shortcut"])
+            class_obj = models.Class.objects.get(id=class_id)
+        except ObjectDoesNotExist:
+            form.add_error("shortcut", "Invalid room!")
+            return self.get(req, id, class_id, add_room_form=form)
+
+        if not models.Class.objects.filter(rooms=room).exists():
+            form.add_error("shortcut", "Room does not exists!")
+            return self.get(req, id, class_id, add_room_form=form)
+
+        class_obj.rooms.remove(room)
+        class_obj.save()
+
+        return self.get(req, id, class_id, add_room_form=None)
+
     def post(self, request, id, class_id):
         if "form" in request.POST:
             match request.POST["form"]:
@@ -331,6 +387,10 @@ class EditClassView(GroupRequiredMixin, View):
                     return self._accept_student(request, id, class_id)
                 case "add_class_date":
                     return self._add_class_date(request, id, class_id)
+                case "add_room":
+                    return self._add_room(request, id, class_id)
+                case "remove_room":
+                    return self._remove_room(request, id, class_id)
 
         return self.get(request, id, class_id)
 

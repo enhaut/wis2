@@ -6,26 +6,7 @@
     <link rel="stylesheet" href="{% static 'room/rooms.css' %}">
     {% if request.user|has_group:"Administrator" %}
         <h2> Zoznam miestností </h2>
-        <table class="wisTable">
-            <thead>
-                <tr>
-                    <th>Skr</th>
-                    <th>Názov</th>
-                    <th>Kapacita</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for room in rooms %}
-                    <tr>
-                        <td><b><a href="{% url 'room_edit' id=room.shortcut %}">{{ room.shortcut }}</a></b></td>
-                        <td>{{ room.name }}</td>
-                        <td class="center">{{ room.capacity }}</td>
-                        <td><a href="{{ room.shortcut }}/delete">Delete</a></td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        {% include 'room/room_table.html' %}
     {% endif %}
 
     <div class="container">
