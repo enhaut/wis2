@@ -1,5 +1,4 @@
 {% extends "index.html" %}
-
 {% load static %}
 {% block menu %}
         <li>
@@ -23,12 +22,14 @@
         <table class="wisTable" id="enrolled">
             <thead>
                 <tr>
-                    <th colspan="4"> <a href="{% url 'my_courses' %}">Mnou registrované kurzy</th>
+                    <th colspan="6">Mnou registrované kurzy</th>
                 </tr>
                 <tr>
                     <th>Skr</th>
                     <th>Kurz</th>
                     <th>Typ</th>
+                    <th>Body</th>
+                    <th>Zn</th>
                     <th>Kr</th>
                 </tr>
             </thead>
@@ -38,41 +39,10 @@
                         <td><b>{{ students_course.course_id.shortcut }}</b></td>
                         <td><a href="{% url 'my_enrolled_course' shortcut=students_course.course_id.shortcut %}">{{ students_course.course_id.name }}</a></td>
                         <td class="center">{{ students_course.course_id.type_of_course.shortcut }}</td>
+                        <td class="center"> {{ assessments }}</td> <!--TODO: add class assessment-->
+                        <td class="center"> </td> <!--TODO: add class assessment-->
                         <td class="center">{{ students_course.course_id.price }}</td>
                     </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        <br>
-        <h2> Registrácia začína <a style="color: red">23.11.2022 o 19:30:00</a> a končí dňa <a style="color: red">18.12.2022 o 23:59:59 </a></h2>
-        <br>
-        <table class="wisTable" id="all">
-            <thead>
-                <tr>
-                    <th colspan="5">Ponúkané kurzy</th>
-                </tr>
-                <tr>
-                    <th>Skr</th>
-                    <th>Kurz</th>
-                    <th>Typ</th>
-                    <th>Kr</th>
-                    <th>Reg</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for course in all_courses %}
-                <tr class="type_{{ course.type_of_course.shortcut }}" id="subject_{{ course.type_of_course.shortcut }}">
-                        <td><b>{{ course.shortcut }}</b></td>
-                        <td> <a> {{ course.name }}</a></td>
-                        <td class="center">{{ course.type_of_course.shortcut }}</td>
-                        <td class="center">{{ course.price }}</td>
-                        <script src="{% static 'onclick.js' %}"></script>
-                        <td class="center">
-                            <button id="tick" onclick="register('subject_{{ course.type_of_course.shortcut }}'); delete_subject(this); style.display = 'none'">
-                                <a href="{% url 'register_course' id=course.shortcut %}">&#9745</a>
-                            </button>
-                        </td>
-                </tr>
                 {% endfor %}
             </tbody>
         </table>

@@ -12,5 +12,9 @@ urlpatterns = [
     path("admin/course/<slug:id>/approve", a.ApproveCourseView.as_view(), name="approve_course"),
     path('admin/course/<slug:id>/registrations', a.RegistrationSettingsView.as_view(), name="registrations"),
     path('admin/course/<slug:id>', a.EditCourseView.as_view(), name="edit_course"),
-    path('admin/course/<slug:id>/approve_registration/<slug:user>', a.ApproveRegistrationView.as_view(), name="appr_course_reg")
+    path('admin/course/<slug:id>/approve_registration/<slug:user>', a.ApproveRegistrationView.as_view(), name="appr_course_reg"),
+    path('student/course/mycourses', views.MyCourseView.as_view(), name="my_courses"),
+    path('student/course/mycourses/<slug:shortcut>', views.MyEnrolledCourseView.as_view(), name="my_enrolled_course"),
+    path('student/timetable', views.TimetableView.as_view(), name="timetable"),
+    path('student/course', views.StudentCourseView.as_view(), name="course"),
 ]

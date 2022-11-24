@@ -3,6 +3,12 @@
 {% load static %}
 {% block menu %}
         <li>
+        <a class="menu-button" href="{% url 'overview' %}">
+            <span style="position:absolute; top:10px; font-size: 24px;line-height: 14px;font-weight: normal">&nbsp;⌂&nbsp;</span>
+        </a>
+        </li>
+
+        <li>
             <a style="position:absolute; right: 70px" class="menubutton" href="{% url 'logout' %}">
                 <span style="font-size:24px;line-height:14px;font-weight:normal">&nbsp;⍈&nbsp;</span>
             </a>
@@ -10,7 +16,7 @@
 
 {% endblock %}
 {% block content %}
-    <h1>Classes</h1>
+    <h1>Termíny</h1>
     {% block subcontent %}
     {% endblock %}
 {% endblock %}

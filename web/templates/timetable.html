@@ -1,0 +1,115 @@
+{% extends "index.html" %}
+{% load static %}
+{% block menu %}
+        <li>
+            <a class="menu-button" href="{% url 'login' %}">
+                <span style="position:absolute; top:10px; font-size: 24px;line-height: 14px;font-weight: normal">&nbsp;⌂&nbsp;</span>
+            </a>
+        </li>
+
+        <li>
+            <a style="position:absolute; right: 70px; top: 2px" class="menubutton" href="{% url 'logout' %}">
+                <span style="font-size:24px;line-height:14px;font-weight:normal">&nbsp;⍈&nbsp;</span>
+            </a>
+        </li>
+{% endblock %}
+
+{% block content %}
+    <h1> Celosemestrálny rozvrh </h1>
+         <b>{{ username }}</b><br>
+        <b>Meno študenta: </b> {{ username.first_name }} {{ username.last_name }}<br>
+        <b>Ak. rok:</b> 2022/2023
+        {{ course.shortcut }}
+    <body>
+    <table border="5" cellspacing="0" align="center">
+        <!--<caption>Timetable</caption>-->
+        <tr>
+            <td><br>
+            </td>
+            <td>
+                <b>7:00-7:50</b>
+            </td>
+            <td>
+                <b>8:00-8:50</b>
+            </td>
+            <td>
+                <b>9:00-9:50</b>
+            </td>
+            <td>
+                <b>10:00-10:50</b>
+            </td>
+            <td>
+                <b>11:00-11:50</b>
+            </td>
+            <td>
+                <b>12:00-12:50</b>
+            </td>
+            <td>
+                <b>13:00-13:50</b>
+            </td>
+            <td>
+                <b>14:00-14:50</b>
+            </td>
+            <td>
+                <b>15:00-15:50</b>
+            </td>
+            <td>
+                <b>16:00-16:50</b>
+            </td>
+            <td>
+                <b>17:00-17:50</b>
+            </td>
+            <td>
+                <b>18:00-18:50</b>
+            </td>
+            <td>
+                <b>19:00-19:50</b>
+            </td>
+        </tr>
+        <tr>
+            <td align="center" height="50"><b>Po</b></td>
+            <td align="center" colspan="2">  </td>
+            <td align="center" colspan="2">  </td>
+            <td align="center" colspan="2">  </td>
+            <td align="center" colspan="2"></td>
+            <td align="center" colspan="3" > </td>
+            <td align="center" colspan="2"> </td>
+        </tr>
+        <tr>
+            <td align="center" height="50"><b>Ut</b></td>
+            <td align="center" colspan="2">  </td>
+            <td align="center" colspan="2">  </td>
+            <td align="center" colspan="2">  </td>
+            <td align="center" colspan="2"></td>
+            <td align="center" colspan="3" > </td>
+            <td align="center" colspan="2"> </td>
+        <tr>
+            <td align="center" height="50"><b>St</b></td>
+            <td align="center" colspan="2">  </td>
+            <td align="center" colspan="2">  </td>
+            <td align="center" colspan="2">  </td>
+            <td align="center" colspan="2"></td>
+            <td align="center" colspan="3" > </td>
+            <td align="center" colspan="2"> </td>
+        </tr>
+        <tr>
+            <td align="center" height="50"><b>Št</b></td>
+            <td align="center" colspan="2">  </td>
+            <td align="center" colspan="2">  </td>
+            <td align="center" colspan="2">  </td>
+            <td align="center" colspan="2"></td>
+            <td align="center" colspan="3" > </td>
+            <td align="center" colspan="2"> </td>
+        </tr>
+        <tr>
+            <td align="center" height="50"><b>Pi</b></td>
+            <td align="center" colspan="2">  </td>
+            <td align="center" colspan="2">  </td>
+            <td align="center" colspan="2">  </td>
+            <td align="center" colspan="2"></td>
+            <td align="center" colspan="3" > </td>
+            <td align="center" colspan="2"> </td>
+        </tr>
+    </table>
+</body>
+{% endblock %}}

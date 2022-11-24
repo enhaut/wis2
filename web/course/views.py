@@ -86,3 +86,52 @@ class RegistrationView(GroupRequiredMixin, View):
 
     def get(self, request, subject):
         return render(request, self.template_name, {"msg": self._register_course(request, subject), "subject": subject})
+class StudentCourseView(GroupRequiredMixin, View):
+    template_name = "course.html"
+
+    group_required = [u"Student"]
+    redirect_unauthenticated_users = False
+    raise_exception = True
+
+    def get(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            students_courses = models.RegistrationToCourse.objects.filter(user=request.user)
+            all_courses = models.Course.objects.filter(approved_by="lampa")
+            return render(request, 'course.html', {'students_courses' : students_courses, 'all_courses' : all_courses})
+
+class MyCourseView(GroupRequiredMixin, View):
+    template_name = "course_enrolled.html"
+
+    group_required = [u"Student"]
+    redirect_unauthenticated_users = False
+    raise_exception = True
+
+    def get(self, request, *args, **kwargs):
+        students_courses = models.RegistrationToCourse.objects.filter(user=request.user)
+        if request.user.is_authenticated:
+            return render(request, 'course_enrolled.html', {'students_courses' : students_courses})
+
+class MyEnrolledCourseView(GroupRequiredMixin, View):
+    template_name = "my_enrolled_course.html"
+
+    group_required = [u"Student"]
+    redirect_unauthenticated_users = False
+    raise_exception = True
+
+    def get(self, request, shortcut, *args, **kwargs):
+        if request.user.is_authenticated:
+            course = models.Course.objects.get(shortcut=shortcut)
+            updates = models.CourseUpdate.objects.filter(course_id=shortcut)
+            return render(request, "my_enrolled_course.html", {'course' : course, 'updates' : updates})
+
+class TimetableView(GroupRequiredMixin, View):
+    template_name = "timetable.html"
+
+    group_required = [u"Student"]
+    redirect_unauthenticated_users = False
+    raise_exception = True
+
+    def get(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            username = request.user
+            return render(request, "timetable.html", {"username" : username})
