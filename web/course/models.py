@@ -73,7 +73,7 @@ class Course(models.Model):
 class RegistrationToCourse(models.Model):
     accepted = models.BooleanField(default=1)
     course_id = models.ForeignKey(Course, on_delete=models.CASCADE)
-    user = models.ForeignKKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     class Meta:
         unique_together = (("course_id", "user"), )

@@ -20,7 +20,7 @@ class OverviewView(LoginRequiredMixin, View):
         elif request.user.groups.filter(name="Guarantor").exists():
             return HttpResponseRedirect('/employee')
         elif request.user.groups.filter(name="Administrator").exists():
-            return HttpResponseRedirect('/employee')
+            return HttpResponseRedirect('/admin')
         else:
             return HttpResponseRedirect('/overview')
 
@@ -53,4 +53,13 @@ class EmployeeView(GroupRequiredMixin, View):
     raise_exception = True
 
     def get(self, request, *args, **kwargs):
-        return render(request, self.template_name)
+        employee = request.user
+        if request.user.is_authenticated:
+            username = employee.username
+            last_login = employee.last_login
+            email = employee.email
+            first_name = employee.first_name
+            last_name = employee.last_name
+            return render(request, 'employee.html', {'username' : username, 'last_login' : last_login, 'email' : email, 'first_name' : first_name, 'last_name' : last_name})
+        else:
+            return render(request, self.template_name)

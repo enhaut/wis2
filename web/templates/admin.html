@@ -1,20 +1,18 @@
 {% extends "index.html" %}
 
 {% block menu %}
-    <li>
+        <li>
         <a class="menu-button" href="{% url 'admin' %}">
-            <span style="font-size: 24px;line-height: 14px;font-weight: normal">&nbsp;⌂&nbsp;</span>
+            <span style="position:absolute; top:10px; font-size: 24px;line-height: 14px;font-weight: normal">&nbsp;⌂&nbsp;</span>
         </a>
-    </li>
+        </li>
 
-    <li class="menu-space"></li>
-    <li>
-        <a style="position:absolute; right: 70px" class="menubutton">
-            <span style="font-size: 24px; line-height: 14px;font-weight: normal">&nbsp;⍈&nbsp;</span>
-        </a>
-    </li>
+        <li>
+            <a style="position:absolute; right: 70px; top: 2px" class="menubutton" href="{% url 'logout' %}">
+                <span style="font-size:24px;line-height:14px;font-weight:normal">&nbsp;⍈&nbsp;</span>
+            </a>
+        </li>
 {% endblock %}
-
 {% block content %}
     <h1>Informačný systém WIS2</h1>
         <div class="container">
