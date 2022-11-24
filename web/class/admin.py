@@ -34,7 +34,7 @@ class CoursesView(GroupRequiredMixin, View):
         except ObjectDoesNotExist:
             return []
 
-        return courses
+        return courses.distinct()
 
     def get(self, request, *args, **kwargs):
         return render(request, self.template_name, {"courses": self._get_courses(request)})
