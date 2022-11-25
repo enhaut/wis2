@@ -6,6 +6,8 @@ from braces.views import GroupRequiredMixin
 from django.core.exceptions import ObjectDoesNotExist
 
 from . import models
+import importlib
+Class = importlib.import_module("class.models", "Class")
 
 
 class RegistrationOverviewView(GroupRequiredMixin, View):
@@ -108,8 +110,13 @@ class MyCourseView(GroupRequiredMixin, View):
 
     def get(self, request, *args, **kwargs):
         students_courses = models.RegistrationToCourse.objects.filter(user=request.user)
+        points = {}
+        for course in students_courses:
+            classes = Class.Class.objects.filter(course=course.course_id)
+            assessments = Class.Assessment.objects.filter(student=request.user, evaluated_class__in=classes)
+            points[course.course_id.shortcut] = sum(assessment.point_evaluation for assessment in assessments)
         if request.user.is_authenticated:
-            return render(request, 'course_enrolled.html', {'students_courses' : students_courses})
+            return render(request, 'course_enrolled.html', {'students_courses' : students_courses, 'points' : points})
 
 class MyEnrolledCourseView(GroupRequiredMixin, View):
     template_name = "my_enrolled_course.html"

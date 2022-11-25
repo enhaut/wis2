@@ -142,5 +142,9 @@
     <div class="container">
         <a class="button" tabindex="1" role="menuitem" href="{% url 'registrations' id=course.shortcut %}">Aktualizácia registrácií</a>
     </div>
+
+    <div class="container">
+        <a class="button" tabindex="2" role="menuitem" href="{% url 'course_admin' %}">Späť na prehľad kurzov</a>
+    </div>
     {% endif %}
 {% endblock %}
