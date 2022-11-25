@@ -350,7 +350,7 @@ class EditClassView(GroupRequiredMixin, View):
             form.add_error("shortcut", "Invalid room!")
             return self.get(req, id, class_id, add_room_form=form)
 
-        if models.Class.objects.filter(rooms=room).exists():
+        if models.Class.objects.filter(id=class_id, rooms=room).exists():
             form.add_error("shortcut", "Room is already assigned to this course!")
             return self.get(req, id, class_id, add_room_form=form)
 

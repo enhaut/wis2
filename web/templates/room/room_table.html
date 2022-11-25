@@ -21,7 +21,7 @@
                             {% csrf_token %}
                             <input type="hidden" name="form" value="remove_room">
                             <input type="hidden" name="shortcut" value="{{ room.shortcut }}">
-                            <button type="submit">Odstranit</button>
+                            <button type="submit">Odstrániť</button>
                         </form>
                     {% else %}
                         <a href="{{ room.shortcut }}/delete">Delete</a>
@@ -42,7 +42,7 @@
                             {% endfor %}
                         </select>
                     </td>
-                    <td><button type="submit">Pridat</button></td>
+                    <td><button type="submit">Pridať</button></td>
                 </form>
             </tr>
         {% endif %}

@@ -1,10 +1,10 @@
-{% extends "student.html" %}
+{% extends "overview.html" %}
 {% load static %}
 {% load get_item %}
 
 {% block content %}
     <link rel="stylesheet" href="{% static 'room/room_edit.css' %}">
-    <h2>Edit student: {{ user.first_name }} {{ user.last_name}}</h2>
+    <h2>Upraviť profil: {{ user.first_name }} {{ user.last_name}}</h2>
     <form method="POST">
         {% csrf_token %}
         <input type="hidden" name="form" value="edit_profile">
@@ -13,7 +13,7 @@
             {{ EditUserForm.errors }}
             <tr>
                 <td colspan="2">
-                    <button type="submit">Update name</button>
+                    <button type="submit">Zmeniť meno</button>
                 </td>
             </tr>
         </table>
@@ -25,8 +25,8 @@
             {{ EditPwForm.as_table}}
             <tr>
                 <td colspan="2">
-                    <p>(automatically logout when password is changed)</p>
-                    <button type="submit">Update password</button>
+                    <p>Automatické odhlásenie pri zmene hesla</p>
+                    <button type="submit">Zmeniť heslo</button>
                 </td>
             </tr>
         </table>
