@@ -118,27 +118,6 @@ class MyCourseView(GroupRequiredMixin, View):
         if request.user.is_authenticated:
             return render(request, 'course_enrolled.html', {'students_courses' : students_courses, 'points' : points})
 
-    def _get_students_points(self, course: models.Course):
-        points = {}
-        for student in course.students.all():
-            try:
-                models.RegistrationToCourse.objects.get(course_id=course, user=student, accepted=True)
-            except ObjectDoesNotExist:
-                points[student.username] = None
-                continue
-
-            points[student.username] = 0
-            try:
-                classes = Class.Class.objects.filter(course=course)
-                assessments = Class.Assessment.objects.filter(student=student, evaluated_class__in=classes)
-            except ObjectDoesNotExist:
-                continue
-
-            points[student.username] = sum(assessment.point_evaluation for assessment in assessments)
-
-        return points
-
-
 class MyEnrolledCourseView(GroupRequiredMixin, View):
     template_name = "my_enrolled_course.html"
 
