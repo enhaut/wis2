@@ -59,7 +59,7 @@
     <table class="wisTable">
         <thead>
             <tr>
-                <th colspan="4">Dútumy</th>
+                <th colspan="4">Dátumy</th>
             </tr>
             <tr>
                 <th>#</th>
@@ -130,5 +130,9 @@
     <br>
     <div class="container">
         <a class="button" tabindex="1" role="menuitem" href="{% url 'class_reg' id=class.course.shortcut class_id=class.id %}">Registrácie</a>
+    </div>
+
+    <div class="container">
+        <a class="button" tabindex="1" role="menuitem" href="{% url 'view_classes' id=class.course.shortcut %}">Späť na termíny kurzu</a>
     </div>
 {% endblock %}

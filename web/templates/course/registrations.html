@@ -36,7 +36,7 @@
             </thead>
             <tbody>
                 {% for course in opened %}
-                    <tr class="type_P">
+                    <tr class="type_{{ course.type_of_course.shortcut }}">
                         <td><b>{{ course.shortcut }}</b></td>
                         <td><a href="{% url 'view_classes' id=course.shortcut %}">{{ course.name }}</a></td>
                         <td class="center">{{ course.type_of_course.shortcut }}</td>
