@@ -1,6 +1,7 @@
 from django import forms
 from django.db.models import Q
 from django.shortcuts import render
+from django.shortcuts import redirect
 from django.views.generic import View
 from braces.views import GroupRequiredMixin
 from django.core.exceptions import ValidationError
@@ -42,20 +43,8 @@ class CoursesView(GroupRequiredMixin, View):
 class CreateClassForm(forms.ModelForm):
     class Meta:
         model = models.Class
-        fields = ["type", "name", "description", "date_from", "date_to"]
+        fields = ["type", "name", "description"]
         widgets = {
-            "date_from": forms.DateTimeInput(
-                attrs={
-                    "type": "datetime-local",
-                    "value": datetime.now().strftime("%Y-%m-%dT%H:%M")  # "2018-06-12T19:30"
-                }
-            ),
-            "date_to": forms.DateTimeInput(
-                attrs={
-                    "type": "datetime-local",
-                    "value": (datetime.now() + timedelta(hours=1, minutes=50)).strftime("%Y-%m-%dT%H:%M")
-                }
-            ),
             "description": forms.Textarea(
                 attrs={
                     "placeholder": "HTML input is supported"
@@ -129,10 +118,6 @@ class ClassView(GroupRequiredMixin, View):
         except (ObjectDoesNotExist, IndexError):
             return HttpResponse(status=400)
 
-        if form.data["date_to"] < form.data["date_from"]:
-            form.add_error("date_to", "Date to needs to be bigger than date from")
-            return self.get(request, id, create_form=form)
-
         if form.is_valid():
             obj = form.save(commit=False)
             obj.course = course
@@ -167,6 +152,26 @@ class AcceptStudentForm(forms.Form):
     )
 
 
+class AddClassDateForm(forms.ModelForm):
+    class Meta:
+        model = models.ClassDates
+        fields = ["date_from", "date_to"]
+        widgets = {
+            "date_from": forms.DateTimeInput(
+                attrs={
+                    "type": "datetime-local",
+                    "value": datetime.now().strftime("%Y-%m-%dT%H:%M")  # "2018-06-12T19:30"
+                }
+            ),
+            "date_to": forms.DateTimeInput(
+                attrs={
+                    "type": "datetime-local",
+                    "value": (datetime.now() + timedelta(hours=1, minutes=50)).strftime("%Y-%m-%dT%H:%M")
+                }
+            )
+        }
+
+
 class EditClassView(GroupRequiredMixin, View):
     template_name = "class/admin/class.html"
 
@@ -196,16 +201,12 @@ class EditClassView(GroupRequiredMixin, View):
                 "type": class_obj.type,
                 "name": class_obj.name,
                 "description": class_obj.description,
-                "date_from": class_obj.date_from,
-                "date_to": class_obj.date_to
             }
         )
         if not request.user.groups.filter(name="Guarantor").exists():
             edit_form.fields["type"].disabled = True
             edit_form.fields["name"].disabled = True
             edit_form.fields["description"].disabled = True
-            edit_form.fields["date_from"].disabled = True
-            edit_form.fields["date_to"].disabled = True
 
         return edit_form
 
@@ -222,7 +223,12 @@ class EditClassView(GroupRequiredMixin, View):
 
         return points
 
-    def get(self, request, id, class_id, edit_form = None, *args, **kwargs):
+    def _get_class_dates(self, class_obj):
+        return models.ClassDates.objects.filter(
+            class_id=class_obj
+        ).all()
+
+    def get(self, request, id, class_id, edit_form = None, add_class_form = None, *args, **kwargs):
         try:
             class_obj = self._get_class(request, id, class_id)
         except (ObjectDoesNotExist, IndexError):
@@ -231,6 +237,9 @@ class EditClassView(GroupRequiredMixin, View):
         if not edit_form:
             edit_form = self._get_edit_form(request, class_obj)
 
+        if not add_class_form:
+            add_class_form = AddClassDateForm()
+
         return render(
             request,
             self.template_name,
@@ -238,7 +247,9 @@ class EditClassView(GroupRequiredMixin, View):
                 "class": class_obj,
                 "CreateClassForm": edit_form,
                 "students": class_obj.students.select_related(),
-                "points": self._get_students_points(class_obj)
+                "points": self._get_students_points(class_obj),
+                "classes": self._get_class_dates(class_obj),
+                "CreateClassDateForm": add_class_form
             }
         )
 
@@ -247,11 +258,6 @@ class EditClassView(GroupRequiredMixin, View):
 
         if (not (class_obj := self._get_class(request, course, class_id))):
             return HttpResponse(status=400)
-
-        if form.data["date_to"] < form.data["date_from"]:
-            form.add_error("date_to", "Date to needs to be bigger than date from")
-            return self.get(request, course, class_id, form)
-
         if form.is_valid():
             try:
                 class_type = models.TypeOfClass.objects.get(pk=form.data["type"])
@@ -261,17 +267,6 @@ class EditClassView(GroupRequiredMixin, View):
             class_obj.type = class_type
             class_obj.name = form.data["name"]
             class_obj.description = form.data["description"]
-
-            class_obj.date_from = make_aware(
-                datetime.strptime(form.data["date_from"], "%Y-%m-%dT%H:%M"),
-                get_current_timezone(),
-                False
-            )
-            class_obj.date_to = make_aware(
-                datetime.strptime(form.data["date_to"], "%Y-%m-%dT%H:%M"),
-                get_current_timezone(),
-                False
-            )
 
             try:
                 class_obj.save()
@@ -295,6 +290,38 @@ class EditClassView(GroupRequiredMixin, View):
             pass
         return self.get(request, course, class_id, None)
 
+    def _add_class_date(self, request, id, class_id):
+        form = AddClassDateForm(request.POST)
+
+        try:
+            class_obj = models.Class.objects.get(id=class_id)
+        except ObjectDoesNotExist:
+            return self.get(request, id, class_id, add_class_form=form)
+
+        if form.data["date_to"] < form.data["date_from"]:
+            form.add_error("date_to", "Date to needs to be bigger than date from")
+            return self.get(request, id, class_id, add_class_form=form)
+
+        date_from = make_aware(
+            datetime.strptime(form.data["date_from"], "%Y-%m-%dT%H:%M"),
+            get_current_timezone(),
+            False
+        )
+        date_to = make_aware(
+            datetime.strptime(form.data["date_to"], "%Y-%m-%dT%H:%M"),
+            get_current_timezone(),
+            False
+        )
+
+        class_date = models.ClassDates(
+            class_id=class_obj,
+            date_from=date_from,
+            date_to=date_to
+        )
+        class_date.save()
+
+        return self.get(request, id, class_id, add_class_form=None)
+
     def post(self, request, id, class_id):
         if "form" in request.POST:
             match request.POST["form"]:
@@ -302,6 +329,8 @@ class EditClassView(GroupRequiredMixin, View):
                     return self._process_edit_class_form(request, id, class_id)
                 case "accept_student":
                     return self._accept_student(request, id, class_id)
+                case "add_class_date":
+                    return self._add_class_date(request, id, class_id)
 
         return self.get(request, id, class_id)
 
@@ -378,3 +407,28 @@ class RegistrationSettingsView(RegistrationSettingsViewBase):
 
         return self.get(request, id, class_id, form)
 
+class EvaluateStudentView(GroupRequiredMixin, View):
+        template_name = "evaluate_student.html"
+
+        group_required = [u"Guarantor", u"Teacher"]
+        redirect_unauthenticated_users = False
+        raise_exception = True
+
+        def get(self, request, id, student_name, *args, **kwargs):
+            if request.user.is_authenticated:
+                course = models.Course.objects.get(shortcut=id)
+                return render(request, "evaluate_student.html", {'course' : course, 'student_name' : student_name})
+
+class RemoveClassDatesView(RegistrationSettingsViewBase):
+    def _remove_class_date(self, subject, class_id, date_id):
+        try:
+            date_obj = models.ClassDates.objects.get(class_id=class_id, id=date_id)
+        except ObjectDoesNotExist:
+            return redirect("edit_class", id=subject, class_id=class_id)
+
+        date_obj.delete()
+
+        return redirect("edit_class", id=subject, class_id=class_id)
+
+    def get(self, request, id, class_id, date_id):
+        return self._remove_class_date(id, class_id, date_id)

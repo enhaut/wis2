@@ -15,13 +15,16 @@
         </li>
 {% endblock %} {% block content %}
     <h1>Informačný systém WIS2</h1>
+        <b>{{ username }}</b>, {{ email }} <br>
+        <b>Meno zamestnanca: </b> {{ first_name }} {{ last_name }}<br>
+        <b>Posledný prístup: </b> {{last_login}} <br>
+        <b>Ak. rok:</b> 2022/2023
+
         <div class="container">
             <a class="button" tabindex="1" role="menuitem" href="{% url 'employee' %}"> Upraviť profil</a>
             <a class="button" tabindex="2" role="menuitem" href="{% url 'employee' %}"> Schváliť registráciu študentom</a>
-            <a class="button" tabindex="3" role="menuitem" href="{% url 'employee' %}"> Nastaviť parametre kurzu</a>
-            <a class="button" tabindex="4" role="menuitem" href="{% url 'employee' %}"> Pridať lektora</a>
-            <a class="button" tabindex="5" role="menuitem" href="{% url 'employee' %}"> Zobraziť prehľad študentov</a>
-            <a class="button" tabindex="6" role="menuitem" href="{% url 'employee' %}"> Udeliť hodnotenie</a>
+            <a class="button" tabindex="3" role="menuitem" href="{% url 'course_admin' %}">Prehľad kurzov</a>
+            <a class="button" tabindex="6" role="menuitem" href="{% url 'admin_classes' %}">Termíny</a>
             <a class="button" tabindex="6" role="menuitem" href="{% url 'logout' %}"> Odhlásiť z WIS2</a>
         </div>
     </div>

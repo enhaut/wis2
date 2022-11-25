@@ -11,14 +11,14 @@
      <table class="wisTable">
          <thead>
             <tr>
-                <th colspan="5">Students</th>
+                <th colspan="5">Študenti</th>
             </tr>
             <tr>
                 <th>Login</th>
-                <th>Name</th>
-                <th>Points</th>
-                <th>Accepted</th>
-                <th>Actions</th>
+                <th>Meno</th>
+                <th>Body</th>
+                <th>Akceptovaní</th>
+                <th>Akcia</th>
             </tr>
         </thead>
         <tbody>
@@ -38,7 +38,7 @@
                                     <input type="hidden" name="id" value="{{ student.class_id }}">
                                     <input type="hidden" name="student" value="{{ student.username }}">
                                     <input type="hidden" name="form" value="accept_student">
-                                    <button type="submit">Accept</button>
+                                    <button type="submit">Akceptovať</button>
                                 </form>
                             {% endif %}
                         {% else %}
@@ -55,19 +55,70 @@
         </tbody>
     </table>
     <br/>
+    <br/>
+    <table class="wisTable">
+        <thead>
+            <tr>
+                <th colspan="4">Dútumy</th>
+            </tr>
+            <tr>
+                <th>#</th>
+                <th>Dátum od</th>
+                <th>Dátum do</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for class_date in classes %}
+                <tr class="type_V">
+                    <td>{{ forloop.counter }}</td>
+                    <td class="center">{{ class_date.date_from|date:"H:i d.m.Y" }}</td>
+                    <td class="center">{{ class_date.date_to|date:"H:i d.m.Y" }}</td>
+                    <td class="center">
+                        <a href="{% url 'remove_date' id=class_date.class_id.course.shortcut class_id=class_date.class_id.id date_id=class_date.id %}">
+                            <button type="submit">Odstrániť</button>
+                        </a>
+                    </td>
+                </tr>
+            {% endfor %}
+            <tr class="type_P">
+                <td></td>
+                <form id="add_date" method="POST">
+                    {% csrf_token %}
+                    <td>
+                        {{ CreateClassDateForm.date_from }}
+                        {{ CreateClassDateForm.date_from.errors }}
+                        <div style="background-color: transparent">
+                        </div>
+                    </td>
+                    <td>
+                        {{ CreateClassDateForm.date_to }}
+                        {{ CreateClassDateForm.date_to.errors }}
+                        <div style="background-color: transparent">
+                        </div>
+                    </td>
+                    <td class="center">
+                        <button type="submit">Pridať dátum</button>
+                    </td>
+                    <input type="hidden" name="form" value="add_class_date">
+                </form>
+            </tr>
+        </tbody>
+    </table>
+    <br/>
     <form method="POST">
         {% csrf_token %}
         <table>
             <thead>
                 <tr>
-                    <th colspan="2" style="font-weight: normal">Edit class <b>{{ class }}</b>:</th>
+                    <th colspan="2" style="font-weight: normal">Upraviť termín <b>{{ class }}</b>:</th>
                 </tr>
             </thead>
             {{ CreateClassForm.as_table }}
             <tr>
                 {% if request.user|has_group:"Guarantor" %}
                     <td colspan="2">
-                        <button type="submit">Update</button>
+                        <button type="submit">Upraviť</button>
                     </td>
                 {% endif %}
             </tr>
@@ -75,6 +126,6 @@
         <input type="hidden" name="form" value="edit_class">
     </form>
     <div class="container">
-        <a class="button" tabindex="1" role="menuitem" href="{% url 'class_reg' id=class.course.shortcut class_id=class.id %}">Registrations</a>
+        <a class="button" tabindex="1" role="menuitem" href="{% url 'class_reg' id=class.course.shortcut class_id=class.id %}">Registrácie</a>
     </div>
 {% endblock %}

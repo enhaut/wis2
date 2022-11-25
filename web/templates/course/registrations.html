@@ -1,0 +1,60 @@
+{% extends "index.html" %}
+
+{% load static %}
+{% block menu %}
+        <li>
+            <a class="menubutton" href="{% url 'student' %}">
+                <span style="position:absolute; top:10px; font-size:24px;line-height:14px;font-weight:normal">&nbsp;⌂&nbsp;</span>
+            </a>
+        </li>
+
+        <li>
+            <a style="position:absolute; right: 70px" class="menubutton" href="{% url 'logout' %}">
+                <span style="font-size:24px;line-height:14px;font-weight:normal">&nbsp;⍈&nbsp;</span>
+            </a>
+        </li>
+
+{% endblock %}
+{% block content %}
+    <h1>Registrácia kurzov</h1>
+    <link rel="stylesheet" href="{% static 'table.css' %}">
+    <link rel="stylesheet" href="{% static 'button.css' %}">
+    <br>
+    <table class="wisTable">
+            <thead>
+                <tr>
+                    <th colspan="6">Ponúkané kurzy</th>
+                </tr>
+                <tr>
+                    <th>Skr</th>
+                    <th>Názov</th>
+                    <th>Typ</th>
+                    <th>Štart registrácie</th>
+                    <th>Koniec registrácie</th>
+                    <th>Registrácia</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for course in opened %}
+                    <tr class="type_P">
+                        <td><b>{{ course.shortcut }}</b></td>
+                        <td><a href="{% url 'view_classes' id=course.shortcut %}">{{ course.name }}</a></td>
+                        <td class="center">{{ course.type_of_course.shortcut }}</td>
+                        <td class="center">{{ course.registration.opens|date:"H:i:s d.m.Y" }}</td>
+                        <td class="center">{{ course.registration.closes|date:"H:i:s d.m.Y" }}</td>
+                        <td class="center"><a href="{% url 'course_registrations' subject=course.shortcut %}"><button type="submit">Registrovať</button></a></td>
+                    </tr>
+                {% endfor %}
+                {% for course in closed %}
+                    <tr class="type_PVT">
+                        <td><b>{{ course.shortcut }}</b></td>
+                        <td><a href="{% url 'view_classes' id=course.shortcut %}">{{ course.name }}</a></td>
+                        <td class="center">{{ course.type_of_course.shortcut }}</td>
+                        <td class="center">{{ course.registration.opens|date:"H:i:s d.m.Y" }}</td>
+                        <td class="center">{{ course.registration.closes|date:"H:i:s d.m.Y" }}</td>
+                        <td class="center"></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+    </table>
+{% endblock %}

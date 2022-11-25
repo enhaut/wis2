@@ -1,0 +1,51 @@
+{% extends "class/class.html" %}
+{% load static %}
+
+{% block subcontent %}
+    <link rel="stylesheet" href="{% static 'table.css' %}">
+    <link rel="stylesheet" href="{% static 'button.css' %}">
+    <h3>Registrácia termínov pre vaše kurzy</h3>
+
+    <table class="wisTable">
+        <thead>
+            <tr>
+                <th colspan="8">Termíny</th>
+            </tr>
+            <tr>
+                <th>Kurz</th>
+                <th>Typ</th>
+                <th>Názov</th>
+                <th>Popis</th>
+                <th>Otvára sa</th>
+                <th>Končí sa</th>
+                <th>Kapacita</th>
+                <th>Registrácia</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for aclass in classes %}
+                <tr class="type_{{ aclass.type.shortcut }}">
+                    <td>{{ aclass.course }}</td>
+                    <td>{{ aclass.type }}</td>
+                    <td><a href="{% url 'class_detail' class_id=aclass.id %}">{{ aclass.name }}</a></td>
+                    <td style="max-width: 200px">{{ aclass.description }}</td>
+                    <td>{{ aclass.registration.opens|date:"H:i:s d.m.Y" }}</td>
+                    <td>{{ aclass.registration.closes|date:"H:i:s d.m.Y" }}</td>
+                    <td>{{ aclass.registration.capacity }}</td>
+
+                    <td>
+                        {% if aclass.registration.opens < actual and actual < aclass.registration.closes %}
+                            <form id="class_register" method="POST">
+                                {% csrf_token %}
+                                <input type="hidden" name="form" value="class_register">
+                                <input type="hidden" name="class_id" value="{{ aclass.id }}">
+                                <input type="hidden" name="course_id" value="{{ aclass.course.shortcut }}">
+                                <button type="submit">Registrovať</button>
+                            </form>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

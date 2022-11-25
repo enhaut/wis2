@@ -9,6 +9,7 @@ from django.http import HttpResponseNotFound
 from django import forms
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
+from django.shortcuts import redirect
 
 from datetime import datetime
 from django.utils.timezone import make_aware, get_current_timezone
@@ -29,18 +30,22 @@ class CourseAdminView(GroupRequiredMixin, View):
     raise_exception = True
 
     def _get_teached_courser(self, request):
-        courses = {}
+        courses = {"guaranted": [], "teached": []}
         try:
             courses["guaranted"] = models.Course.objects.filter(
                 Q(guarantor=request.user)
             )
         except ObjectDoesNotExist:
-            courses["guaranted"] = []
+            pass
 
-        courses["teached"] = []  # TODO: teacher
+        try:
+            courses["teached"] = models.Course.objects.filter(
+                Q(lectors=request.user)
+            )
+        except ObjectDoesNotExist:
+            pass
 
         return courses
-
     def _get_approved_courses(self, request):
         courses = {}
 
@@ -208,6 +213,12 @@ class EditCourseView(GroupRequiredMixin, View):
     def _get_students_points(self, course: models.Course):
         points = {}
         for student in course.students.all():
+            try:
+                models.RegistrationToCourse.objects.get(course_id=course, user=student, accepted=True)
+            except ObjectDoesNotExist:
+                points[student.username] = None
+                continue
+
             points[student.username] = 0
             try:
                 classes = Class.Class.objects.filter(course=course)
@@ -474,3 +485,21 @@ class RegistrationSettingsView(RegistrationSettingsViewBase):
 
         return self.get(request, id, form)
 
+
+class ApproveRegistrationView(GroupRequiredMixin, View):
+    group_required = [u"Guarantor"]
+    redirect_unauthenticated_users = False
+    raise_exception = True
+
+    def get(self, request, id, user, *args, **kwargs):
+        try:
+            models.Course.objects.get(shortcut=id, guarantor=request.user)
+            user = models.User.objects.get(username=user)
+            registration = models.RegistrationToCourse.objects.get(course_id=id, user=user, accepted=False)
+        except ObjectDoesNotExist:
+            return HttpResponse(status=404)
+
+        registration.accepted = True
+        registration.save()
+
+        return redirect("edit_course", id=id)

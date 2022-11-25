@@ -1,0 +1,24 @@
+{% extends "index.html" %}
+
+{% block menu %}
+        <li>
+            <a class="menubutton" href="{% url 'employee' %}">
+                <span style="position:absolute; top:10px; font-size:24px;line-height:14px;font-weight:normal">&nbsp;⌂&nbsp;</span>
+            </a>
+        </li>
+        <li>
+            <a style="position:absolute; right: 70px" class="menubutton" href="{% url 'logout' %}">
+                <span style="font-size:24px;line-height:14px;font-weight:normal">&nbsp;⍈&nbsp;</span>
+            </a>
+        </li>
+
+{% endblock %}
+
+{% block content %}
+    <h1>{{ course.shortcut }} - {{ course.name }}</h1>
+    <h2>{{ student_name }}</h2>
+
+    <div class="container">
+        <a class="button" tabindex="1" role="menuitem" href="{% url 'edit_course' id=course.shortcut %}">Späť na kurz</a>
+    </div>
+{% endblock %}

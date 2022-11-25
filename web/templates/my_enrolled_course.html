@@ -1,0 +1,27 @@
+{% extends "index.html" %}
+{% load static %}
+{% block menu %}
+        <li>
+            <a class="menu-button" href="{% url 'login' %}">
+                <span style="position:absolute; top:10px; font-size: 24px;line-height: 14px;font-weight: normal">&nbsp;⌂&nbsp;</span>
+            </a>
+        </li>
+
+        <li>
+            <a style="position:absolute; right: 70px; top: 2px" class="menubutton" href="{% url 'logout' %}">
+                <span style="font-size:24px;line-height:14px;font-weight:normal">&nbsp;⍈&nbsp;</span>
+            </a>
+        </li>
+
+{% endblock %}
+{% block content %}
+    <h1> {{ course.shortcut }} - {{ course.name }}</h1> <br>
+    <a> <b>Typ: </b> {{ course.type_of_course.name }} <b>Kredity: </b> {{ course.price }} <b>Garant predmetu: </b> {{ course.guarantor.first_name }} {{ course.guarantor.last_name }} </a>
+    <br>
+    {% include 'course/updates.html' %}
+    <br>
+    {% block subcontent %}
+    <link rel="stylesheet" href="{% static 'table.css' %}">
+    <link rel="stylesheet" href="{% static 'button.css' %}">
+    {% endblock %}
+{% endblock %}
