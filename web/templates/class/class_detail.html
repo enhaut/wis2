@@ -4,21 +4,21 @@
 {% block subcontent %}
     <link rel="stylesheet" href="{% static 'table.css' %}">
     <link rel="stylesheet" href="{% static 'button.css' %}">
-    <h3>Detail of {{ class_obj.name }} class for {{ class_obj.course }}</h3>
+    <h3>Detail termínu {{ class_obj.name }} k predmetu {{ class_obj.course }}</h3>
 
-    <p>Course: {{ class_obj.course_id }}</p>
-    <p>Class type: {{ class_obj.type }}</p>
-    <p>{{ class_obj.description }}</p>
+    <p><b>Kurz: </b>{{ class_obj.course_id }}</p>
+    <p><b>Typ termínu: </b>{{ class_obj.type }}</p>
+    <p><b>Popis: </b>{{ class_obj.description }}</p>
     <br>
     <table class="wisTable">
         <thead>
             <tr>
-                <th colspan="3">Class dates</th>
+                <th colspan="3">Dátumy termínov</th>
             </tr>
             <tr>
                 <th>#</th>
-                <th>Date from</th>
-                <th>Date to</th>
+                <th>Dátum od</th>
+                <th>Dátum do</th>
             </tr>
         </thead>
         <tbody>
@@ -31,4 +31,9 @@
             {% endfor %}
         </tbody>
     </table>
+
+
+    <div class="container">
+        <a class="button" tabindex="1" role="menuitem" href="{% url 'class_registration' %}">Späť na prihlasovanie termínov</a>
+    </div>
 {% endblock %}

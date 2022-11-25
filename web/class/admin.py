@@ -476,7 +476,6 @@ class EvaluateStudentView(GroupRequiredMixin, View):
 
         def get(self, request, id, student_name, *args, **kwargs):
             if request.user.is_authenticated:
-                request.user = student_name
                 course = models.Course.objects.get(shortcut=id)
                 return render(request, "evaluate_student.html", {'course' : course, 'student_name' : student_name})
 

@@ -4,6 +4,7 @@
 
 {% block subcontent %}
     <link rel="stylesheet" href="{% static 'room/rooms.css' %}">
+    <link rel="stylesheet" href="{% static 'button.css' %}">
     {% if request.user|has_group:"Administrator" %}
         <h2> Zoznam miestností </h2>
         {% include 'room/room_table.html' %}

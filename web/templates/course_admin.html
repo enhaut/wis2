@@ -10,11 +10,11 @@
         <table class="wisTable">
             <thead>
                 <tr>
-                    <th colspan="4">Guaranted courses</th>
+                    <th colspan="4">Garantované kurzy</th>
                 </tr>
                 <tr>
-                    <th>Zkr</th>
-                    <th>Course</th>
+                    <th>Skr</th>
+                    <th>Kurz</th>
                     <th>Typ</th>
                     <th>Kr</th>
                 </tr>
@@ -36,11 +36,11 @@
         <table class="wisTable">
             <thead>
                 <tr>
-                    <th colspan="4">Teached courses</th>
+                    <th colspan="4">Vyučované kurzy</th>
                 </tr>
                 <tr>
-                    <th>Zkr</th>
-                    <th>Course</th>
+                    <th>Skr</th>
+                    <th>Kurz</th>
                     <th>Typ</th>
                     <th>Kr</th>
                 </tr>
@@ -61,14 +61,14 @@
         <table class="wisTable" id="to_approve">
             <thead>
                 <tr>
-                    <th colspan="5">Courses to approve</th>
+                    <th colspan="5">Kurzy na schválenie</th>
                 </tr>
                 <tr>
-                    <th>Zkr</th>
-                    <th>Course</th>
+                    <th>Skr</th>
+                    <th>Kurz</th>
                     <th>Typ</th>
                     <th>Kr</th>
-                    <th>Approve</th>
+                    <th>Schváliť</th>
                 </tr>
             </thead>
             <tbody>
@@ -91,11 +91,11 @@
         <table class="wisTable" id="approved">
             <thead>
                 <tr>
-                    <th colspan="4">Approved courses</th>
+                    <th colspan="4">Schválené kurzy</th>
                 </tr>
                 <tr>
-                    <th>Zkr</th>
-                    <th>Course</th>
+                    <th>Skr</th>
+                    <th>Kurz</th>
                     <th>Typ</th>
                     <th>Kr</th>
                 </tr>
@@ -114,6 +114,6 @@
     {% endif %}
 
     <div class="container">
-        <a class="button" tabindex="1" role="menuitem" href="{% url 'create_course' %}"> Create course</a>
+        <a class="button" tabindex="1" role="menuitem" href="{% url 'create_course' %}">Vytvoriť kurz</a>
     </div>
 {% endblock %}

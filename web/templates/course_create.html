@@ -10,6 +10,10 @@
         <table>
             {{ CreateForm.as_table }}
         </table>
-        <button type="submit">Create</button>
+        <button type="submit">Vytvoriť kurz</button>
     </form>
+
+        <div class="container">
+        <a class="button" tabindex="1" role="menuitem" href="{% url 'course_admin' %}">Späť na prehľad kurzov</a>
+    </div>
 {% endblock %}

@@ -30,18 +30,22 @@ class CourseAdminView(GroupRequiredMixin, View):
     raise_exception = True
 
     def _get_teached_courser(self, request):
-        courses = {}
+        courses = {"guaranted": [], "teached": []}
         try:
             courses["guaranted"] = models.Course.objects.filter(
                 Q(guarantor=request.user)
             )
         except ObjectDoesNotExist:
-            courses["guaranted"] = []
+            pass
 
-        courses["teached"] = []  # TODO: teacher
+        try:
+            courses["teached"] = models.Course.objects.filter(
+                Q(lectors=request.user)
+            )
+        except ObjectDoesNotExist:
+            pass
 
         return courses
-
     def _get_approved_courses(self, request):
         courses = {}
 
