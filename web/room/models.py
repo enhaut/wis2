@@ -17,3 +17,6 @@ class Room(models.Model):
             RegexValidator('^[A-Z]+[0-9]*$', message='First char must be capital letter, rest must be numeric')
         ]
     )
+
+    def __str__(self):
+        return f"{self.shortcut} (capacity: {self.capacity})"

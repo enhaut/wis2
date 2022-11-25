@@ -125,6 +125,9 @@
         </table>
         <input type="hidden" name="form" value="edit_class">
     </form>
+    <br>
+    {% include 'room/room_table.html' %}
+    <br>
     <div class="container">
         <a class="button" tabindex="1" role="menuitem" href="{% url 'class_reg' id=class.course.shortcut class_id=class.id %}">Registrácie</a>
     </div>
