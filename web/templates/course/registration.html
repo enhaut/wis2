@@ -4,4 +4,8 @@
 {% block subcontent %}
     <h3>Nastavenia registrácie predmetu: {{ course.shortcut }} - {{ course.name }}</h3>
     {% include 'course/registration_form.html' %}
+
+        <div class="container">
+        <a class="button" tabindex="1" role="menuitem" href="{% url 'edit_course' id=course.shortcut %}">Späť na kurz</a>
+    </div>
 {% endblock %}

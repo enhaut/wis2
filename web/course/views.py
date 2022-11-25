@@ -6,6 +6,8 @@ from braces.views import GroupRequiredMixin
 from django.core.exceptions import ObjectDoesNotExist
 
 from . import models
+import importlib
+Class = importlib.import_module("class.models", "Class")
 
 
 class RegistrationOverviewView(GroupRequiredMixin, View):
@@ -108,8 +110,34 @@ class MyCourseView(GroupRequiredMixin, View):
 
     def get(self, request, *args, **kwargs):
         students_courses = models.RegistrationToCourse.objects.filter(user=request.user)
+        points = {}
+        for course in students_courses:
+            classes = Class.Class.objects.filter(course=course.course_id)
+            assessments = Class.Assessment.objects.filter(student=request.user, evaluated_class__in=classes)
+            points[course.course_id.shortcut] = sum(assessment.point_evaluation for assessment in assessments)
         if request.user.is_authenticated:
-            return render(request, 'course_enrolled.html', {'students_courses' : students_courses})
+            return render(request, 'course_enrolled.html', {'students_courses' : students_courses, 'points' : points})
+
+    def _get_students_points(self, course: models.Course):
+        points = {}
+        for student in course.students.all():
+            try:
+                models.RegistrationToCourse.objects.get(course_id=course, user=student, accepted=True)
+            except ObjectDoesNotExist:
+                points[student.username] = None
+                continue
+
+            points[student.username] = 0
+            try:
+                classes = Class.Class.objects.filter(course=course)
+                assessments = Class.Assessment.objects.filter(student=student, evaluated_class__in=classes)
+            except ObjectDoesNotExist:
+                continue
+
+            points[student.username] = sum(assessment.point_evaluation for assessment in assessments)
+
+        return points
+
 
 class MyEnrolledCourseView(GroupRequiredMixin, View):
     template_name = "my_enrolled_course.html"

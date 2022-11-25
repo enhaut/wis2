@@ -1,5 +1,6 @@
 {% extends "index.html" %}
 {% load static %}
+{% load get_item %}
 {% block menu %}
         <li>
             <a class="menu-button" href="{% url 'login' %}">
@@ -39,8 +40,30 @@
                         <td><b>{{ students_course.course_id.shortcut }}</b></td>
                         <td><a href="{% url 'my_enrolled_course' shortcut=students_course.course_id.shortcut %}">{{ students_course.course_id.name }}</a></td>
                         <td class="center">{{ students_course.course_id.type_of_course.shortcut }}</td>
-                        <td class="center"> {{ assessments }}</td> <!--TODO: add class assessment-->
-                        <td class="center"> </td> <!--TODO: add class assessment-->
+                        <td class="center">
+                        {% if points|get_item:students_course.course_id.shortcut is None %}
+                            -
+                        {% else %}
+                            {{ points|get_item:students_course.course_id.shortcut }}
+                        {% endif %}
+                        </td>
+                        <td class="center">
+                            {% if points|get_item:students_course.course_id.shortcut is None %}
+                                <b>-</b>
+                            {% elif points|get_item:students_course.course_id.shortcut < 49.5 %}
+                                <b>4F</b>
+                            {% elif 49.5 <= points|get_item:students_course.course_id.shortcut < 59.5 %}
+                                <b>3E</b>
+                            {% elif 59.5 <= points|get_item:students_course.course_id.shortcut < 69.5 %}
+                                <b>3D</b>
+                            {% elif 69.5 <= points|get_item:students_course.course_id.shortcut < 79.5 %}
+                                <b>2C</b>
+                            {% elif 79.5 <= points|get_item:students_course.course_id.shortcut < 89.5 %}
+                                <b>2B</b>
+                            {% elif points|get_item:students_course.course_id.shortcut > 89.5 %}
+                                <b>1A</b>
+                            {% endif %}
+                        </td> <!--TODO: add class assessment-->
                         <td class="center">{{ students_course.course_id.price }}</td>
                     </tr>
                 {% endfor %}
