@@ -8,6 +8,8 @@ from django.core.exceptions import ObjectDoesNotExist
 from . import models
 import importlib
 Class = importlib.import_module("class.models", "Class")
+RegistrationToClass = importlib.import_module("class.models", "RegistrationToClass")
+
 
 
 class RegistrationOverviewView(GroupRequiredMixin, View):
@@ -56,15 +58,15 @@ class RegistrationView(GroupRequiredMixin, View):
             registration = None
 
         if registration is not None:
-            return "You are already registered!"
+            return "Už si zaregistrovaný"
 
-        msg = "Registered :)"
+        msg = "Registrovaný :)"
         registration = models.RegistrationToCourse(user=user, course_id=course)
         if course.registration.auto_approve:
             registration.accepted = True
         else:
             registration.accepted = False
-            msg = "Registered but your registration needs to be approved by guarantor or teacher :)"
+            msg = "Registrovaný, ale tvoju registráciu ešte musí schváliť garant predmetu alebo učiteľ"
 
         registration.save()
 
@@ -74,7 +76,7 @@ class RegistrationView(GroupRequiredMixin, View):
         try:
             course = models.Course.objects.get(shortcut=subject)
         except ObjectDoesNotExist:
-            return "Could not found requested course"
+            return "Požadovaný kurz nebol nájdený"
 
         now = timezone.now()
 
@@ -82,9 +84,9 @@ class RegistrationView(GroupRequiredMixin, View):
             if registration.capacity > course.students.count():
                 return self._register_user_to_course(request.user, course)
             else:
-                return "Course capacity has been exceeded"
+                return "V tomto kurze už nie je voľné miesto"
         else:
-            return "Registration is closed"
+            return "Registrácia je zatvorená"
 
     def get(self, request, subject):
         return render(request, self.template_name, {"msg": self._register_course(request, subject), "subject": subject})
@@ -125,11 +127,23 @@ class MyEnrolledCourseView(GroupRequiredMixin, View):
     redirect_unauthenticated_users = False
     raise_exception = True
 
+    def _get_classes(self, request, shortcut, *args, **kwargs):
+        classes = []
+
+        course = models.RegistrationToCourse.objects.get(accepted=True, user=request.user, course_id=shortcut)
+
+        course_classes = Class.Class.objects.filter(course=course.course_id)
+        registrations = RegistrationToClass.RegistrationToClass.objects.filter(class_id__in=course_classes, user=request.user, accepted=True)
+        for registration in registrations:
+            classes.append(registration.class_id)
+        return classes
+
     def get(self, request, shortcut, *args, **kwargs):
         if request.user.is_authenticated:
             course = models.Course.objects.get(shortcut=shortcut)
             updates = models.CourseUpdate.objects.filter(course_id=shortcut)
-            return render(request, "my_enrolled_course.html", {'course' : course, 'updates' : updates})
+            return render(request, "my_enrolled_course.html", {'course' : course, 'updates' : updates, 'classes' : self._get_classes(request, shortcut)})
+
 
 class TimetableView(GroupRequiredMixin, View):
     template_name = "timetable.html"
