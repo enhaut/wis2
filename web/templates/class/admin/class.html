@@ -49,7 +49,11 @@
                             {% endif %}
                         {% endif %}
                     </td>
-                    <td>TODO: evaluate</td>
+                    <td>
+                        <a href="{% url 'evaluate_student' id=class.course.shortcut student_name=student.username %}">
+                                    <button type="submit">Ohodnoť</button>
+                        </a>
+                    </td>
                 </tr>
             {% endfor %}
         </tbody>
