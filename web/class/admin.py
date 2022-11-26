@@ -224,7 +224,7 @@ class EditClassView(GroupRequiredMixin, View):
             try:
                 assessments = models.Assessment.objects.filter(student=student, evaluated_class=class_obj)
             except ObjectDoesNotExist:
-                continue
+                points[student.username] = None
 
             points[student.username] = sum(assessment.point_evaluation for assessment in assessments)
 
@@ -255,6 +255,10 @@ class EditClassView(GroupRequiredMixin, View):
 
         class_rooms, avail_rooms = self._get_rooms(class_obj)
 
+        registered = {}
+        for regs in models.RegistrationToClass.objects.filter(class_id=class_obj):
+            registered[regs.user.username] = regs.accepted
+
         return render(
             request,
             self.template_name,
@@ -262,6 +266,7 @@ class EditClassView(GroupRequiredMixin, View):
                 "class": class_obj,
                 "CreateClassForm": edit_form,
                 "students": class_obj.students.select_related(),
+                "registered": registered,
                 "points": self._get_students_points(class_obj),
                 "classes": self._get_class_dates(class_obj),
                 "CreateClassDateForm": add_class_form,
