@@ -161,7 +161,6 @@ class TimetableView(GroupRequiredMixin, View):
             class_dates = ClassDates.ClassDates.objects.filter(class_id=my_class.class_id, date_to__gte=timezone.now())
             my_classes.extend(class_dates)
         my_classes.sort(key = lambda x: x.date_from)
-        print(my_classes)
         return my_classes
 
     def get(self, request, *args, **kwargs):
