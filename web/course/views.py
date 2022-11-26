@@ -9,6 +9,7 @@ from . import models
 import importlib
 Class = importlib.import_module("class.models", "Class")
 RegistrationToClass = importlib.import_module("class.models", "RegistrationToClass")
+ClassDates = importlib.import_module("class.models", "ClassDates")
 
 
 
@@ -152,7 +153,17 @@ class TimetableView(GroupRequiredMixin, View):
     redirect_unauthenticated_users = False
     raise_exception = True
 
+    def _get_classes(self, request):
+        my_classes = []
+
+        classes = RegistrationToClass.RegistrationToClass.objects.filter(user=request.user)
+        for my_class in classes:
+            class_dates = ClassDates.ClassDates.objects.filter(class_id=my_class.class_id, date_to__gte=timezone.now())
+            my_classes.extend(class_dates)
+        my_classes.sort(key = lambda x: x.date_from)
+        return my_classes
+
     def get(self, request, *args, **kwargs):
         if request.user.is_authenticated:
             username = request.user
-            return render(request, "timetable.html", {"username" : username})
+            return render(request, "timetable.html", {'username' : username, 'my_classes' : self._get_classes(request)})
