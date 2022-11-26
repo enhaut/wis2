@@ -23,13 +23,13 @@
         </thead>
         <tbody>
             {% for student in students %}
-                <tr class="type_{% if student.registrationtoclass_set.get.accepted %}V{% else %}P{% endif %}">
+                <tr class="type_{% if registered|get_item:student.username %}V{% else %}P{% endif %}">
                     <td><a href="">{{ student.username }}</a></td>
                     <td class="center">{{ student.first_name }} {{ student.last_name }}</td>
                     <td class="center">{{ points|get_item:student.username }}</td>
                     <td>
                         {% if request.user|has_group:"Guarantor"  %}
-                            {% if student.registrationtoclass_set.get.accepted %}
+                            {% if registered|get_item:student.username %}
                                 <input type="checkbox" checked disabled>
                             {% else %}
                                 <form id="accept_student" method="POST">
@@ -42,7 +42,7 @@
                                 </form>
                             {% endif %}
                         {% else %}
-                            {% if student.registrationtoclass_set.get.accepted %}
+                            {% if registered|get_item:student.username %}
                                 <input type="checkbox" checked disabled>
                             {% else %}
                                 <input type="checkbox" disabled>
