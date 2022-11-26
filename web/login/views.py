@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.views.generic import View
 from django.contrib.auth import logout
+from django.utils import timezone
 from braces.views import GroupRequiredMixin
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
@@ -15,7 +16,11 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 import importlib
 from . import basic_auth as auth
+from datetime import datetime, timedelta
+from course.models import Course
+from course.models import CourseUpdate
 from . import models
+Class = importlib.import_module("class.models", "Class")
 
 
 class LoginPageView(View):
@@ -40,6 +45,46 @@ class LogoutView(View):
         res['Location'] = location
 
         return res
+
+
+class AvailableCoursesView(View):
+    redirect_unauthenticated_users = False
+    raise_exception = True
+
+    template_name = "courses_available.html"
+
+    def _get_courses(self, request):
+        ordered_courses = {"opened": [], "closed": []}
+
+        courses = Course.objects.filter(
+            ~Q(
+                registration=None
+            )
+        )
+        now = timezone.now()
+
+        for course in courses:
+            if course.registration and course.registration.opens < now < course.registration.closes:
+                ordered_courses["opened"].append(course)
+            else:
+                ordered_courses["closed"].append(course)
+
+        return ordered_courses
+
+    def get(self, request):
+        return render(request, self.template_name, self._get_courses(request))
+
+
+class CourseContentView(View):
+    template_name = "course_content.html"
+
+    redirect_unauthenticated_users = False
+    raise_exception = True
+
+    def get(self, request, shortcut, *args, **kwargs):
+        course = Course.objects.get(shortcut=shortcut)
+        updates = CourseUpdate.objects.filter(course_id=shortcut)
+        return render(request, "course_content.html", {'course': course, 'updates': updates})
 
 
 class EditUserForm(ModelForm):
