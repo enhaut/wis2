@@ -8,6 +8,7 @@ from django.core.exceptions import ValidationError
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.translation import gettext_lazy as _
 from django.http import HttpResponse, HttpResponseNotFound
+from django.utils import timezone
 from django.utils.timezone import make_aware, get_current_timezone
 
 
@@ -16,9 +17,12 @@ import sys
 from . import models
 sys.path.append('..')
 from course.models import Course
+from course.models import RegistrationToCourse
 from room.models import Room
 from course.admin import RegistrationSettingsViewBase
+from django.forms import ModelForm
 
+from . import models
 
 class CoursesView(GroupRequiredMixin, View):
     template_name = "class/admin/courses.html"
@@ -472,6 +476,12 @@ class RegistrationSettingsView(RegistrationSettingsViewBase):
 
         return self.get(request, id, class_id, form)
 
+class AddPointsForm(forms.Form):
+    points = forms.FloatField(label='points', widget=forms.NumberInput(attrs={"min" : 0, "max" : 101}))
+
+class RemovePointsForm(forms.Form):
+    assessment_id = forms.IntegerField(label='assessment_id')
+
 class EvaluateStudentView(GroupRequiredMixin, View):
         template_name = "evaluate_student.html"
 
@@ -479,10 +489,60 @@ class EvaluateStudentView(GroupRequiredMixin, View):
         redirect_unauthenticated_users = False
         raise_exception = True
 
-        def get(self, request, id, student_name, *args, **kwargs):
+        def _get_classes(self, request, shortcut, student_name, *args, **kwargs):
+            classes = []
+
+            course = RegistrationToCourse.objects.get(accepted=True, user=student_name, course_id=shortcut)
+
+            course_classes = models.Class.objects.filter(course=course.course_id)
+            registrations = models.RegistrationToClass.objects.filter(class_id__in=course_classes, user=student_name, accepted=True)
+            for registration in registrations:
+                classes.append(registration.class_id)
+            return classes
+
+        def _process_add_points_form(self, request, id, student_name):
+            form = AddPointsForm(request.POST)
+            if form.is_valid():
+                try:
+                    my_evaluated_class = models.Class.objects.get(id=form.data["class_id"])
+                    student_name = models.User.objects.get(username=student_name)
+                except ObjectDoesNotExist:
+                    return HttpResponseNotFound(f"Class {id} could not be found!")
+                assessment = models.Assessment()
+                assessment.point_evaluation = float(form.data['points'])
+                assessment.published_date = timezone.now()
+                assessment.evaluated_class = my_evaluated_class
+                assessment.entered_points_by = request.user
+                assessment.student = student_name
+                assessment.save()
+
+            return self.get(request, id, student_name)
+
+        def _process_remove_points_form(self, request, id, student_name):
+            form = RemovePointsForm(request.POST)
+            if form.is_valid():
+                try:
+                    student_name = models.User.objects.get(username=student_name)
+                    assessment = models.Assessment.objects.get(id=form.data["assessment_id"], evaluated_class=form.data["class_id"], student=student_name)
+                except ObjectDoesNotExist:
+                    return HttpResponseNotFound(f"Class {id} could not be found!")
+                assessment.delete()
+
+            return self.get(request, id, student_name)
+
+        def post(self, request, id, student_name):
+            if "form" in request.POST:
+                match request.POST["form"]:
+                    case "add_points":
+                        return self._process_add_points_form(request, id, student_name)
+                    case "remove_points":
+                        return self._process_remove_points_form(request, id, student_name)
+            return self.get(request, id, student_name)
+        def get(self, request, id, student_name, add_points=AddPointsForm(), *args, **kwargs):
             if request.user.is_authenticated:
-                course = models.Course.objects.get(shortcut=id)
-                return render(request, "evaluate_student.html", {'course' : course, 'student_name' : student_name})
+                course = Course.objects.get(shortcut=id)
+                assessments = models.Assessment.objects.filter(evaluated_class__in=self._get_classes(request, id, student_name))
+                return render(request, "evaluate_student.html", {'course' : course, 'student_name' : student_name, 'classes' : self._get_classes(request, id, student_name), 'form' : add_points, 'assessments' : assessments})
 
 class RemoveClassDatesView(RegistrationSettingsViewBase):
     def _remove_class_date(self, subject, class_id, date_id):
