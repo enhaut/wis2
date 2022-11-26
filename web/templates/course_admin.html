@@ -75,7 +75,7 @@
                 {% for course in courses.to_approve %}
                     <tr class="type_{{ course.type_of_course.shortcut }}" id="subject_{{ course.type_of_course.shortcut }}">
                         <td><b>{{ course.shortcut }}</b></td>
-                        <td><a href="{% url 'edit_course' id=course.shortcut %}">{{ course.name }}</a></td>
+                        <td><a href="{% url 'course_content' shortcut=course.shortcut %}">{{ course.name }}</a></td>
                         <td class="center">{{ course.type_of_course.shortcut }}</td>
                         <td class="center">{{ course.price }}</td>
                         <script src="{% static 'onclick.js' %}"></script>
@@ -104,7 +104,7 @@
                 {% for course in courses.all %}
                     <tr class="type_{{ course.type_of_course.shortcut }}">
                         <td><b>{{ course.shortcut }}</b></td>
-                        <td><a href="{% url 'edit_course' id=course.shortcut %}">{{ course.name }}</a></td>
+                        <td><a href="{% url 'course_content' shortcut=course.shortcut %}">{{ course.name }}</a></td>
                         <td class="center">{{ course.type_of_course.shortcut }}</td>
                         <td class="center">{{ course.price }}</td>
                     </tr>

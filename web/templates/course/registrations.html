@@ -38,7 +38,7 @@
                 {% for course in opened %}
                     <tr class="type_{{ course.type_of_course.shortcut }}">
                         <td><b>{{ course.shortcut }}</b></td>
-                        <td><a href="{% url 'view_classes' id=course.shortcut %}">{{ course.name }}</a></td>
+                        <td><a href="{% url 'course_content' shortcut=course.shortcut %}">{{ course.name }}</a></td>
                         <td class="center">{{ course.type_of_course.shortcut }}</td>
                         <td class="center">{{ course.registration.opens|date:"H:i:s d.m.Y" }}</td>
                         <td class="center">{{ course.registration.closes|date:"H:i:s d.m.Y" }}</td>
@@ -48,7 +48,7 @@
                 {% for course in closed %}
                     <tr class="type_PVT">
                         <td><b>{{ course.shortcut }}</b></td>
-                        <td><a href="{% url 'view_classes' id=course.shortcut %}">{{ course.name }}</a></td>
+                        <td><a href="{% url 'course_content' shortcut=course.shortcut %}">{{ course.name }}</a></td>
                         <td class="center">{{ course.type_of_course.shortcut }}</td>
                         <td class="center">{{ course.registration.opens|date:"H:i:s d.m.Y" }}</td>
                         <td class="center">{{ course.registration.closes|date:"H:i:s d.m.Y" }}</td>
