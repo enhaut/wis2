@@ -10,6 +10,7 @@ import importlib
 Class = importlib.import_module("class.models", "Class")
 RegistrationToClass = importlib.import_module("class.models", "RegistrationToClass")
 ClassDates = importlib.import_module("class.models", "ClassDates")
+Assessment = importlib.import_module("class.models", "Assessment")
 
 
 
@@ -143,7 +144,8 @@ class MyEnrolledCourseView(GroupRequiredMixin, View):
         if request.user.is_authenticated:
             course = models.Course.objects.get(shortcut=shortcut)
             updates = models.CourseUpdate.objects.filter(course_id=shortcut)
-            return render(request, "my_enrolled_course.html", {'course' : course, 'updates' : updates, 'classes' : self._get_classes(request, shortcut)})
+            assessments = Assessment.Assessment.objects.filter(evaluated_class__in=self._get_classes(request, shortcut))
+            return render(request, "my_enrolled_course.html", {'course' : course, 'updates' : updates, 'classes' : self._get_classes(request, shortcut), 'assessments' : assessments})
 
 
 class TimetableView(GroupRequiredMixin, View):

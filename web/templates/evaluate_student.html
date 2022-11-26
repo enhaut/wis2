@@ -1,5 +1,5 @@
 {% extends "index.html" %}
-
+{% load static %}
 {% block menu %}
         <li>
             <a class="menubutton" href="{% url 'employee' %}">
@@ -18,7 +18,82 @@
     <h1>{{ course.shortcut }} - {{ course.name }}</h1>
     <h2>{{ student_name }}</h2>
 
+    {% block subcontent %}
+    <link rel="stylesheet" href="{% static 'table.css' %}">
+    <link rel="stylesheet" href="{% static 'button.css' %}">
+        <table class="wisTable">
+        <thead>
+            <tr>
+                <th colspan="5">Termíny</th>
+            </tr>
+            <tr>
+                <th>Kurz</th>
+                <th>Názov</th>
+                <th>Popis</th>
+                <th>Body</th>
+                <th>Akcia</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for aclass in classes %}
+                <tr class="type_{{ aclass.type.shortcut }}">
+                    <td>{{ aclass.course }}</td>
+                    <td><a href="{% url 'class_detail' class_id=aclass.id %}">{{ aclass.name }}</a></td>
+                    <td style="max-width: 200px">{{ aclass.description }}</td>
+                    <form id="add_points" method="POST">
+                        {% csrf_token %}
+                        <td colspan="1">
+                            {{ form.points }}
+                            <div style="background-color: transparent">
+                            {{ form.points.errors }}
+                            </div>
+                        </td>
+                        <td><button type="submit">Obodovať</button></td>
+                        <input type="hidden" name="form" value="add_points">
+                        <input type="hidden" name="class_id" value="{{ aclass.id }}">
+                    </form>
+                </tr>
+            {% endfor %}
+        </tbody>
+        </table>
+        <table class="wisTable">
+        <thead>
+            <tr>
+                <th colspan="6">Dosavadné hodnotenia</th>
+            </tr>
+            <tr>
+                <th>#</th>
+                <th>Názov</th>
+                <th>Body</th>
+                <th>Hodnotil</th>
+                <th>Dňa</th>
+                <th>Akcia</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for assessment in assessments %}
+                <tr class="type_{{ assessment.evaluated_class.type.shortcut }}">
+                    <td>{{ assessment.evaluated_class.id }}</td>
+                    <td><a href="{% url 'class_detail' class_id=assessment.evaluated_class.id %}">{{ assessment.evaluated_class.name }}</a></td>
+                    <td>{{ assessment.point_evaluation }}</td>
+                    <td>{{ assessment.entered_points_by }}</td>
+                    <td style="max-width: 200px">{{ assessment.published_date|date:"H:i d.m.Y"}}</td>
+                    <form id="remove_points" method="POST">
+                        {% csrf_token %}
+                        <td><button type="submit">Odobrať body</button></td>
+                        <input type="hidden" name="form" value="remove_points">
+                        <input type="hidden" name="class_id" value="{{ assessment.evaluated_class.id }}">
+                        <input type="hidden" name="assessment_id" value="{{ assessment.id }}">
+                    </form>
+                </tr>
+            {% endfor %}
+        </tbody>
+        </table>
+{% endblock %}
     <div class="container">
         <a class="button" tabindex="1" role="menuitem" href="{% url 'edit_course' id=course.shortcut %}">Späť na kurz</a>
     </div>
+
 {% endblock %}
