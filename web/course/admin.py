@@ -237,7 +237,7 @@ class EditCourseView(GroupRequiredMixin, View):
         return points
 
     def get(self, request, id, add_lector=AddLectorForm(), add_update=CreateCourseUpdateForm(), edit_course=None, *args, **kwargs):
-        if not (course := self._get_course(id)):
+        if not (course := self._get_course(id, request)):
             return HttpResponseNotFound(f"Course {id} could not be found!")
 
         if not edit_course:
