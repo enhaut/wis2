@@ -30,9 +30,9 @@ class RegistrationSettings(RegistrationSettingsBase):
 
 
 class TypeOfCourse(models.Model):
-    shortcut = models.CharField(max_length=3, primary_key=True)
-    name = models.CharField(max_length=20)
-    description = models.TextField(max_length=100)
+    shortcut = models.CharField(max_length=7, primary_key=True)
+    name = models.CharField(max_length=256)
+    description = models.TextField(max_length=256)
 
     def __str__(self):
         return f"{self.name} ({self.shortcut})"

@@ -4,7 +4,7 @@ from django.contrib.auth.models import AbstractUser
 
 # Create your models here.
 class User(AbstractUser):
-    username = models.CharField(primary_key=True, unique=True, verbose_name="xlogin", max_length=8)
+    username = models.CharField(primary_key=True, unique=True, verbose_name="xlogin", max_length=20)
     email = models.EmailField("mail", unique=True)
 
     # disable unused default attributes
