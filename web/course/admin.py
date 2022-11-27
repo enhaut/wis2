@@ -194,10 +194,16 @@ class EditCourseView(GroupRequiredMixin, View):
     redirect_unauthenticated_users = False
     raise_exception = True
 
-    def _get_course(self, id):
+    def _get_course(self, id, request):
         try:
             return models.Course.objects.filter(
-                shortcut=id
+                Q(
+                    shortcut=id,
+                    guarantor=request.user
+                ) | Q(
+                    shortcut=id,
+                    lectors=request.user
+                )
             )[0]
         except (ObjectDoesNotExist, KeyError, IndexError):
             return []
@@ -261,7 +267,14 @@ class EditCourseView(GroupRequiredMixin, View):
         form = AddLectorForm(request.POST)
         if form.is_valid():
             try:
-                course = models.Course.objects.get(shortcut=id)
+                course = models.Course.objects.get(
+                    Q(
+                    shortcut=id,
+                    guarantor=request.user
+                ) | Q(
+                    shortcut=id,
+                    lectors=request.user
+                ))
             except ObjectDoesNotExist:
                 return HttpResponseNotFound(f"Course {id} could not be found!")
 
@@ -279,6 +292,9 @@ class EditCourseView(GroupRequiredMixin, View):
         form = RemoveLectorForm(request.POST)
         if form.is_valid():
             user = User.objects.get(pk=form.data["lector"])
+
+            if not self._get_course(id, request):
+                return HttpResponseNotFound(f"Course {id} could not be found!")
 
             course = models.Course.objects.get(shortcut=id, lectors=user)
             course.lectors.remove(user)
@@ -309,6 +325,9 @@ class EditCourseView(GroupRequiredMixin, View):
 
     def _process_edit_course_form(self, request, id):
         form = EditCourseForm(request.POST)
+        if not self._get_course(id, request):
+            return HttpResponseNotFound(f"Course {id} could not be found!")
+
         try:
             course = models.Course.objects.filter(
                 Q(shortcut=id, guarantor=request.user)
