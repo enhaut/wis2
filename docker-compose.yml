@@ -1,4 +1,4 @@
-version: "3.9"
+version: "3.10"
 
 services:
   db:
@@ -15,7 +15,7 @@ services:
       MARIADB_DATABASE: wis2
   web:
     build: .
-    command: pipenv run python web/manage.py runserver 0.0.0.0:8000
+    command: bash -c "sleep 20 && pipenv run python web/manage.py migrate && pipenv run python web/manage.py loaddata web/data/* && pipenv run python web/manage.py runserver 0.0.0.0:8000"
     volumes:
       - .:/wis
     ports:
