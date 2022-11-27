@@ -1,5 +1,6 @@
 {% extends "index.html" %}
 {% load static %}
+{% load get_item %}
 {% block menu %}
         <li>
             <a class="menu-button" href="{% url 'login' %}">
@@ -52,8 +53,8 @@
             <tr>
                 <th>#</th>
                 <th>Názov</th>
-                <th>Body</th>
                 <th>Hodnotil</th>
+                <th>Body</th>
                 <th>Dňa</th>
             </tr>
         </thead>
@@ -63,8 +64,8 @@
                 <tr class="type_{{ assessment.evaluated_class.type.shortcut }}">
                     <td>{{ assessment.evaluated_class.id }}</td>
                     <td><a href="{% url 'class_detail' class_id=assessment.evaluated_class.id %}">{{ assessment.evaluated_class.name }}</a></td>
-                    <td>{{ assessment.point_evaluation }}</td>
                     <td>{{ assessment.entered_points_by }}</td>
+                    <td>{{ assessment.point_evaluation }}</td>
                     <td style="max-width: 200px">{{ assessment.published_date|date:"H:i d.m.Y"}}</td>
                 </tr>
             {% endfor %}

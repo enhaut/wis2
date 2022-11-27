@@ -7,7 +7,7 @@ from braces.views import GroupRequiredMixin
 from django.core.exceptions import ValidationError
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.translation import gettext_lazy as _
-from django.http import HttpResponse, HttpResponseNotFound
+from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect
 from django.utils import timezone
 from django.utils.timezone import make_aware, get_current_timezone
 
@@ -502,12 +502,16 @@ class EvaluateStudentView(GroupRequiredMixin, View):
 
         def _process_add_points_form(self, request, id, student_name):
             form = AddPointsForm(request.POST)
-            if form.is_valid():
-                try:
-                    my_evaluated_class = models.Class.objects.get(id=form.data["class_id"])
-                    student_name = models.User.objects.get(username=student_name)
-                except ObjectDoesNotExist:
-                    return HttpResponseNotFound(f"Class {id} could not be found!")
+            try:
+                course = models.Course.objects.filter(
+                    Q(shortcut=id, lectors=request.user) | Q(shortcut=id, guarantor=request.user))
+                my_evaluated_class = models.Class.objects.get(id=form.data["class_id"])
+                student_name = models.User.objects.get(username=student_name)
+            except ObjectDoesNotExist:
+                form.add_error("description", "You are not a teacher/guarantor of this course")
+                course = None
+                return HttpResponseNotFound(f"Class {id} could not be found!")
+            if form.is_valid() and course:
                 assessment = models.Assessment()
                 assessment.point_evaluation = float(form.data['points'])
                 assessment.published_date = timezone.now()
@@ -515,18 +519,26 @@ class EvaluateStudentView(GroupRequiredMixin, View):
                 assessment.entered_points_by = request.user
                 assessment.student = student_name
                 assessment.save()
+            else:
+                return HttpResponseNotFound(f"You are not a teacher/guarantor of this course so you can't change points!")
 
             return self.get(request, id, student_name)
 
         def _process_remove_points_form(self, request, id, student_name):
             form = RemovePointsForm(request.POST)
-            if form.is_valid():
-                try:
-                    student_name = models.User.objects.get(username=student_name)
-                    assessment = models.Assessment.objects.get(id=form.data["assessment_id"], evaluated_class=form.data["class_id"], student=student_name)
-                except ObjectDoesNotExist:
-                    return HttpResponseNotFound(f"Class {id} could not be found!")
+            try:
+                course = models.Course.objects.filter(
+                    Q(shortcut=id, lectors=request.user) | Q(shortcut=id, guarantor=request.user))
+                student_name = models.User.objects.get(username=student_name)
+                assessment = models.Assessment.objects.get(id=form.data["assessment_id"], evaluated_class=form.data["class_id"], student=student_name)
+            except ObjectDoesNotExist:
+                form.add_error("description", "You are not a teacher/guarantor of this course")
+                course = None
+                return HttpResponseNotFound(f"Class {id} could not be found!")
+            if form.is_valid() and course:
                 assessment.delete()
+            else:
+                return HttpResponseNotFound(f"You are not a teacher/guarantor of this course so you can't change points!")
 
             return self.get(request, id, student_name)
 
@@ -541,7 +553,7 @@ class EvaluateStudentView(GroupRequiredMixin, View):
         def get(self, request, id, student_name, add_points=AddPointsForm(), *args, **kwargs):
             if request.user.is_authenticated:
                 course = Course.objects.get(shortcut=id)
-                assessments = models.Assessment.objects.filter(evaluated_class__in=self._get_classes(request, id, student_name))
+                assessments = models.Assessment.objects.filter(evaluated_class__in=self._get_classes(request, id, student_name), student=student_name)
                 return render(request, "evaluate_student.html", {'course' : course, 'student_name' : student_name, 'classes' : self._get_classes(request, id, student_name), 'form' : add_points, 'assessments' : assessments})
 
 class RemoveClassDatesView(RegistrationSettingsViewBase):
