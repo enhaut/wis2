@@ -10,6 +10,8 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.core.exceptions import ValidationError
 from django.shortcuts import redirect
 
+from django.contrib.auth.models import Group
+from django import forms
 import sys
 from django.http import HttpResponseRedirect, HttpResponse, HttpResponseNotFound
 from django.utils.decorators import method_decorator
@@ -194,3 +196,57 @@ class EditProfileView(GroupRequiredMixin, View):
                     return self._process_edit_pw_form(request)
 
         return self.get(request)
+
+
+
+class AddUserForm(forms.ModelForm):
+    class Meta:
+        model = models.User
+        fields = ["username", "email", "first_name", "last_name", "password"]
+
+class RemoveUserForm(forms.Form):
+    student = forms.CharField(label="username")
+
+class UserManagementView(GroupRequiredMixin, View):
+    template_name = "user_management.html"
+
+    group_required = [u"Administrator"]
+    redirect_unauthenticated_users = False
+    raise_exception = True
+
+    def _process_add_user_form(self, request):
+        form = AddUserForm(request.POST)
+        if form.is_valid():
+            user = models.User()
+            user.username = form.data['username']
+            user.email = form.data['email']
+            user.first_name = form.data['first_name']
+            user.last_name = form.data['last_name']
+            user.set_password(form.data['password'])
+            user.save()
+
+            stud = Group.objects.get(name='Student')
+            user.groups.add(stud)
+            user.save()
+
+            return self.get(request)
+
+    def _process_remove_user_form(self, request):
+        form = RemoveUserForm(request.POST)
+        user = models.User.objects.get(username=form.data['username'])
+        user.delete()
+
+        return self.get(request)
+
+    def post(self, request):
+        if "form" in request.POST:
+            match request.POST["form"]:
+                case "add_user":
+                    return self._process_add_user_form(request)
+                case "remove_user":
+                    return self._process_remove_user_form(request)
+        return self.get(request)
+
+    def get(self, request, add_form=AddUserForm()):
+        students = models.User.objects.all()
+        return render(request, self.template_name, {'form' : add_form, 'students' : students})

@@ -1,0 +1,62 @@
+{% extends "overview.html" %}
+{% load static %}
+{% load get_item %}
+
+{% block content %}
+    <link rel="stylesheet" href="{% static 'table.css' %}">
+    <link rel="stylesheet" href="{% static 'button.css' %}">
+    <h2>Správa užívateľov</h2>
+    <table class="wisTable" id="all_students">
+            <thead>
+                <tr>
+                    <th colspan="6">Užívatelia</th>
+                </tr>
+                <tr>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>Meno</th>
+                    <th>Priezvisko</th>
+                    <th>Akcia</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for student in students %}
+                    <tr>
+                    <td><b>{{ student.username }}</b></td>
+                    <td>{{ student.email }}</td>
+                    <td>{{ student.first_name }}</td>
+                    <td>{{ student.last_name }}</td>
+                    <form method="POST">
+                        {% csrf_token %}
+                        <input type="hidden" name="form" value="remove_user">
+                        <input type="hidden" name="username" value="{{ student.username }}">
+                        <td><button type="submit">Vymazať užívateľa</button></td>
+                    </form>
+                    </tr>
+                {% endfor %}
+            </tbody>
+    </table>
+
+    <br>
+
+    <form method="POST">
+        {% csrf_token %}
+        <input type="hidden" name="form" value="add_user">
+        <table class="wisTable">
+            <thead>
+                <tr>
+                    <th colspan="2">Nový užívateľ</th>
+                </tr>
+                <tr>
+                    <th colspan="2"></th>
+                </tr>
+            </thead>
+            {{ form.as_table }}
+            <tr>
+                <td colspan="1">
+                    <button type="submit">Vytvoriť nového užívateľa</button>
+                </td>
+            </tr>
+        </table>
+    </form>
+{% endblock %}

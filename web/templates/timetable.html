@@ -41,7 +41,7 @@
                 {% for my_class in my_classes %}
                     <tr class="type_{{ my_class.class_id.type.shortcut }}">
                     <td>{{ my_class.class_id.course.shortcut }}</td>
-                    <td><a href="">{{ my_class.class_id.name }}</a></td>
+                    <td><a href="{% url 'course_content' shortcut=my_class.class_id.course.shortcut %}">{{ my_class.class_id.name }}</a></td>
                     <td style="max-width: 200px">{{ my_class.class_id.description }}</td>
                     <td>{{ my_class.date_from|date:"H:i d.m.Y" }}</td>
                     <td>{{ my_class.date_to|date:"H:i d.m.Y" }}</td>
