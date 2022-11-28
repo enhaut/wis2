@@ -1,0 +1,53 @@
+{% extends "index.html" %}
+{% load static %}
+{% block menu %}
+        <li>
+            <a class="menu-button" href="{% url 'login' %}">
+                <span style="position:absolute; top:10px; font-size: 24px;line-height: 14px;font-weight: normal">&nbsp;⌂&nbsp;</span>
+            </a>
+        </li>
+
+        <li>
+            <a style="position:absolute; right: 70px; top: 2px" class="menubutton" href="{% url 'logout' %}">
+                <span style="font-size:24px;line-height:14px;font-weight:normal">&nbsp;⍈&nbsp;</span>
+            </a>
+        </li>
+{% endblock %}
+
+{% block content %}
+    {% block subcontent %}
+    <link rel="stylesheet" href="{% static 'table.css' %}">
+    <link rel="stylesheet" href="{% static 'button.css' %}">
+    <h1> Celosemestrálny rozvrh </h1>
+         <b>{{ username }}</b><br>
+        <b>Meno študenta: </b> {{ username.first_name }} {{ username.last_name }}<br>
+        <b>Ak. rok:</b> 2022/2023
+        {{ course.shortcut }}
+    <table class="wisTable" id="enrolled">
+            <thead>
+                <tr>
+                    <th colspan="6">Mnou registrované termíny</th>
+                </tr>
+                <tr>
+                <th>Kurz</th>
+                <th>Názov</th>
+                <th>Popis</th>
+                <th>Dátum od</th>
+                <th>Dátum do</th>
+            </tr>
+            </thead>
+
+            <tbody>
+                {% for my_class in my_classes %}
+                    <tr class="type_{{ my_class.class_id.type.shortcut }}">
+                    <td>{{ my_class.class_id.course.shortcut }}</td>
+                    <td><a href="{% url 'course_content' shortcut=my_class.class_id.course.shortcut %}">{{ my_class.class_id.name }}</a></td>
+                    <td style="max-width: 200px">{{ my_class.class_id.description }}</td>
+                    <td>{{ my_class.date_from|date:"H:i d.m.Y" }}</td>
+                    <td>{{ my_class.date_to|date:"H:i d.m.Y" }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+    </table>
+{% endblock %}
+{% endblock %}

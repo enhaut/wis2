@@ -75,20 +75,20 @@ class ClassesRegistrationView(GroupRequiredMixin, View):
 
                 if registration.auto_approve:
                     reg.accepted = True
-                    msg = "Registered :)"
+                    msg = "Registrovaný :)"
                 else:
                     reg.accepted = False
-                    msg = "Registered but your registration needs to be approved by guarantor"
+                    msg = "Registrovaný, ale tvoju registráciu ešte musí schváliť garant predmetu"
 
                 try:
                     reg.save()
                 except IntegrityError:
-                    msg = "You are already registered"
+                    msg = "Už si registrovaný"
                     del reg
             else:
-                msg = "There is no remaining capacity in this class"
+                msg = "V tomto termíne už nie je voľné miesto"
         else:
-            msg = "Registration is not allowed yet"
+            msg = "Registrácia ešte nie je povolená"
 
         return render(
             request,

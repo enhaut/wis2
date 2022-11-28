@@ -8,13 +8,14 @@
     <table class="wisTable">
             <thead>
                 <tr>
-                    <th colspan="4">Courses</th>
+                    <th colspan="5">Kurzy</th>
                 </tr>
                 <tr>
-                    <th>Abrv</th>
-                    <th>Title</th>
-                    <th>Type</th>
-                    <th>Role</th>
+                    <th>Skr</th>
+                    <th>Názov</th>
+                    <th>Typ</th>
+                    <th>Rola</th>
+                    <th>Akcia</th>
                 </tr>
             </thead>
             <tbody>
@@ -24,6 +25,7 @@
                         <td><a href="{% url 'view_classes' id=course.shortcut %}">{{ course.name }}</a></td>
                         <td class="center">{{ course.type_of_course.shortcut }}</td>
                         <td class="center">x</td>
+                        <td class="center"><button type="submit">Odstranit</button></td>
                     </tr>
                 {% endfor %}
             </tbody>

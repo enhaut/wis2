@@ -1,0 +1,79 @@
+{% extends "index.html" %}
+{% load static %}
+{% load get_item %}
+{% block menu %}
+        <li>
+            <a class="menu-button" href="{% url 'login' %}">
+                <span style="position:absolute; top:10px; font-size: 24px;line-height: 14px;font-weight: normal">&nbsp;⌂&nbsp;</span>
+            </a>
+        </li>
+
+        <li>
+            <a style="position:absolute; right: 70px; top: 2px" class="menubutton" href="{% url 'logout' %}">
+                <span style="font-size:24px;line-height:14px;font-weight:normal">&nbsp;⍈&nbsp;</span>
+            </a>
+        </li>
+
+{% endblock %}
+{% block content %}
+    <h1> {{ course.shortcut }} - {{ course.name }}</h1> <br>
+    <a> <b>Typ: </b> {{ course.type_of_course.name }} <b>Kredity: </b> {{ course.price }} <b>Garant predmetu: </b> {{ course.guarantor.first_name }} {{ course.guarantor.last_name }} </a>
+    <br>
+    {% include 'course/updates.html' %}
+    {% block subcontent %}
+    <link rel="stylesheet" href="{% static 'table.css' %}">
+    <link rel="stylesheet" href="{% static 'button.css' %}">
+        <h3>Moje termíny a hodnotenia</h3>
+        <table class="wisTable">
+        <thead>
+            <tr>
+                <th colspan="3">Termíny</th>
+            </tr>
+            <tr>
+                <th>#</th>
+                <th>Názov</th>
+                <th>Popis</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for aclass in classes %}
+                <tr class="type_{{ aclass.type.shortcut }}">
+                    <td>{{ aclass.id }}</td>
+                    <td><a href="{% url 'class_detail' class_id=aclass.id %}">{{ aclass.name }}</a></td>
+                    <td>{{ aclass.description }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+        <table class="wisTable">
+        <thead>
+            <tr>
+                <th colspan="5">Hodnotenia</th>
+            </tr>
+            <tr>
+                <th>#</th>
+                <th>Názov</th>
+                <th>Hodnotil</th>
+                <th>Body</th>
+                <th>Dňa</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for assessment in assessments %}
+                <tr class="type_{{ assessment.evaluated_class.type.shortcut }}">
+                    <td>{{ assessment.evaluated_class.id }}</td>
+                    <td><a href="{% url 'class_detail' class_id=assessment.evaluated_class.id %}">{{ assessment.evaluated_class.name }}</a></td>
+                    <td>{{ assessment.entered_points_by }}</td>
+                    <td>{{ assessment.point_evaluation }}</td>
+                    <td style="max-width: 200px">{{ assessment.published_date|date:"H:i d.m.Y"}}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+        </table>
+    {% endblock %}
+
+        <div class="container">
+            <a class="button" tabindex="1" role="menuitem" href="{% url 'my_courses' %}">Späť na prehľad kurzov</a>
+        </div>
+{% endblock %}

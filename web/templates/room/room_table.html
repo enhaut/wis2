@@ -1,0 +1,50 @@
+{% load has_group %}
+
+<table class="wisTable">
+    <thead>
+        <tr>
+            <th>Skr</th>
+            <th>Názov</th>
+            <th>Kapacita</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for room in rooms %}
+            <tr>
+                <td><b><a href="{% url 'room_edit' id=room.shortcut %}">{{ room.shortcut }}</a></b></td>
+                <td>{{ room.name }}</td>
+                <td class="center">{{ room.capacity }}</td>
+                <td>
+                    {% if avail_rooms and request.user|has_group:"Guarantor" %}
+                        <form method="POST" id="remove_room">
+                            {% csrf_token %}
+                            <input type="hidden" name="form" value="remove_room">
+                            <input type="hidden" name="shortcut" value="{{ room.shortcut }}">
+                            <button type="submit">Odstrániť</button>
+                        </form>
+                    {% else %}
+                        <a href="{{ room.shortcut }}/delete">Delete</a>
+                    {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+        {% if avail_rooms and request.user|has_group:"Guarantor" %}
+            <tr class="type_P">
+                <form method="POST" id="add_room">
+                    {% csrf_token %}
+                    <input type="hidden" name="form" value="add_room">
+                    <td colspan="3">
+                        {{ EditRoomForm.shortcut.errors }}
+                        <select name="shortcut">
+                            {% for avail in avail_rooms %}
+                                <option value="{{ avail.shortcut }}">{{ avail }}</option>
+                            {% endfor %}
+                        </select>
+                    </td>
+                    <td><button type="submit">Pridať</button></td>
+                </form>
+            </tr>
+        {% endif %}
+    </tbody>
+</table>

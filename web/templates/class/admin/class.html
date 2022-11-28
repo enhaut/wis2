@@ -11,25 +11,25 @@
      <table class="wisTable">
          <thead>
             <tr>
-                <th colspan="5">Students</th>
+                <th colspan="5">Študenti</th>
             </tr>
             <tr>
                 <th>Login</th>
-                <th>Name</th>
-                <th>Points</th>
-                <th>Accepted</th>
-                <th>Actions</th>
+                <th>Meno</th>
+                <th>Body</th>
+                <th>Akceptovaní</th>
+                <th>Akcia</th>
             </tr>
         </thead>
         <tbody>
             {% for student in students %}
-                <tr class="type_{% if student.registrationtoclass_set.get.accepted %}V{% else %}P{% endif %}">
+                <tr class="type_{% if registered|get_item:student.username %}V{% else %}P{% endif %}">
                     <td><a href="">{{ student.username }}</a></td>
                     <td class="center">{{ student.first_name }} {{ student.last_name }}</td>
                     <td class="center">{{ points|get_item:student.username }}</td>
                     <td>
                         {% if request.user|has_group:"Guarantor"  %}
-                            {% if student.registrationtoclass_set.get.accepted %}
+                            {% if registered|get_item:student.username %}
                                 <input type="checkbox" checked disabled>
                             {% else %}
                                 <form id="accept_student" method="POST">
@@ -38,18 +38,22 @@
                                     <input type="hidden" name="id" value="{{ student.class_id }}">
                                     <input type="hidden" name="student" value="{{ student.username }}">
                                     <input type="hidden" name="form" value="accept_student">
-                                    <button type="submit">Accept</button>
+                                    <button type="submit">Akceptovať</button>
                                 </form>
                             {% endif %}
                         {% else %}
-                            {% if student.registrationtoclass_set.get.accepted %}
+                            {% if registered|get_item:student.username %}
                                 <input type="checkbox" checked disabled>
                             {% else %}
                                 <input type="checkbox" disabled>
                             {% endif %}
                         {% endif %}
                     </td>
-                    <td>TODO: evaluate</td>
+                    <td>
+                        <a href="{% url 'evaluate_student' id=class.course.shortcut student_name=student.username %}">
+                                    <button type="submit">Ohodnoť</button>
+                        </a>
+                    </td>
                 </tr>
             {% endfor %}
         </tbody>
@@ -59,13 +63,13 @@
     <table class="wisTable">
         <thead>
             <tr>
-                <th colspan="4">Dates</th>
+                <th colspan="4">Dátumy</th>
             </tr>
             <tr>
                 <th>#</th>
-                <th>Date from</th>
-                <th>Date to</th>
-                <th>Action</th>
+                <th>Dátum od</th>
+                <th>Dátum do</th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
@@ -76,7 +80,7 @@
                     <td class="center">{{ class_date.date_to|date:"H:i d.m.Y" }}</td>
                     <td class="center">
                         <a href="{% url 'remove_date' id=class_date.class_id.course.shortcut class_id=class_date.class_id.id date_id=class_date.id %}">
-                            <button type="submit">Remove</button>
+                            <button type="submit">Odstrániť</button>
                         </a>
                     </td>
                 </tr>
@@ -98,7 +102,7 @@
                         </div>
                     </td>
                     <td class="center">
-                        <button type="submit">Add date</button>
+                        <button type="submit">Pridať dátum</button>
                     </td>
                     <input type="hidden" name="form" value="add_class_date">
                 </form>
@@ -111,21 +115,28 @@
         <table>
             <thead>
                 <tr>
-                    <th colspan="2" style="font-weight: normal">Edit class <b>{{ class }}</b>:</th>
+                    <th colspan="2" style="font-weight: normal">Upraviť termín <b>{{ class }}</b>:</th>
                 </tr>
             </thead>
             {{ CreateClassForm.as_table }}
             <tr>
                 {% if request.user|has_group:"Guarantor" %}
                     <td colspan="2">
-                        <button type="submit">Update</button>
+                        <button type="submit">Upraviť</button>
                     </td>
                 {% endif %}
             </tr>
         </table>
         <input type="hidden" name="form" value="edit_class">
     </form>
+    <br>
+    {% include 'room/room_table.html' %}
+    <br>
     <div class="container">
-        <a class="button" tabindex="1" role="menuitem" href="{% url 'class_reg' id=class.course.shortcut class_id=class.id %}">Registrations</a>
+        <a class="button" tabindex="1" role="menuitem" href="{% url 'class_reg' id=class.course.shortcut class_id=class.id %}">Registrácie</a>
+    </div>
+
+    <div class="container">
+        <a class="button" tabindex="1" role="menuitem" href="{% url 'view_classes' id=class.course.shortcut %}">Späť na termíny kurzu</a>
     </div>
 {% endblock %}

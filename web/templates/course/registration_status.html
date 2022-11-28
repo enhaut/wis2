@@ -3,6 +3,12 @@
 {% load static %}
 {% block menu %}
         <li>
+            <a class="menubutton" href="{% url 'student' %}">
+                <span style="position:absolute; top:10px; font-size:24px;line-height:14px;font-weight:normal">&nbsp;⌂&nbsp;</span>
+            </a>
+        </li>
+
+        <li>
             <a style="position:absolute; right: 70px" class="menubutton" href="{% url 'logout' %}">
                 <span style="font-size:24px;line-height:14px;font-weight:normal">&nbsp;⍈&nbsp;</span>
             </a>
@@ -13,5 +19,9 @@
     <h1>Registration of {{ subject }}</h1>
 
     <p>{{ msg }}</p>
+
+    <div class="container">
+        <a class="button" tabindex="1" role="menuitem" href="{% url 'course_registrations_overview' %}">Späť na registrácie</a>
+    </div>
 
 {% endblock %}

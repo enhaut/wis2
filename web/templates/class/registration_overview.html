@@ -4,22 +4,22 @@
 {% block subcontent %}
     <link rel="stylesheet" href="{% static 'table.css' %}">
     <link rel="stylesheet" href="{% static 'button.css' %}">
-    <h3>Class registrations for your courses</h3>
+    <h3>Registrácia termínov pre vaše kurzy</h3>
 
     <table class="wisTable">
         <thead>
             <tr>
-                <th colspan="8">Classes</th>
+                <th colspan="8">Termíny</th>
             </tr>
             <tr>
-                <th>Subject</th>
-                <th>Type</th>
-                <th>Name</th>
-                <th>Description</th>
-                <th>Opens</th>
-                <th>Closes</th>
-                <th>Capacity</th>
-                <th>Register</th>
+                <th>Kurz</th>
+                <th>Typ</th>
+                <th>Názov</th>
+                <th>Popis</th>
+                <th>Otvára sa</th>
+                <th>Končí sa</th>
+                <th>Kapacita</th>
+                <th>Registrácia</th>
             </tr>
         </thead>
         <tbody>
@@ -28,7 +28,7 @@
                     <td>{{ aclass.course }}</td>
                     <td>{{ aclass.type }}</td>
                     <td><a href="{% url 'class_detail' class_id=aclass.id %}">{{ aclass.name }}</a></td>
-                    <td>{{ aclass.description }}</td>
+                    <td style="max-width: 200px">{{ aclass.description }}</td>
                     <td>{{ aclass.registration.opens|date:"H:i:s d.m.Y" }}</td>
                     <td>{{ aclass.registration.closes|date:"H:i:s d.m.Y" }}</td>
                     <td>{{ aclass.registration.capacity }}</td>
@@ -40,7 +40,7 @@
                                 <input type="hidden" name="form" value="class_register">
                                 <input type="hidden" name="class_id" value="{{ aclass.id }}">
                                 <input type="hidden" name="course_id" value="{{ aclass.course.shortcut }}">
-                                <button type="submit">Register</button>
+                                <button type="submit">Registrovať</button>
                             </form>
                         {% endif %}
                     </td>

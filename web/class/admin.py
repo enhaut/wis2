@@ -7,7 +7,8 @@ from braces.views import GroupRequiredMixin
 from django.core.exceptions import ValidationError
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.translation import gettext_lazy as _
-from django.http import HttpResponse, HttpResponseNotFound
+from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect
+from django.utils import timezone
 from django.utils.timezone import make_aware, get_current_timezone
 
 
@@ -16,8 +17,12 @@ import sys
 from . import models
 sys.path.append('..')
 from course.models import Course
+from course.models import RegistrationToCourse
+from room.models import Room
 from course.admin import RegistrationSettingsViewBase
+from django.forms import ModelForm
 
+from . import models
 
 class CoursesView(GroupRequiredMixin, View):
     template_name = "class/admin/courses.html"
@@ -34,7 +39,7 @@ class CoursesView(GroupRequiredMixin, View):
         except ObjectDoesNotExist:
             return []
 
-        return courses
+        return courses.distinct()
 
     def get(self, request, *args, **kwargs):
         return render(request, self.template_name, {"courses": self._get_courses(request)})
@@ -90,10 +95,13 @@ class ClassView(GroupRequiredMixin, View):
 
     def get(self, request, id, create_form=None, *args, **kwargs):
         try:
-            Course.objects.filter(
+            courses = Course.objects.filter(
                 Q(shortcut=id, lectors=request.user) | Q(shortcut=id, guarantor=request.user)
             )
         except ObjectDoesNotExist:
+            return HttpResponse(status=404)
+
+        if not courses:
             return HttpResponse(status=404)
 
         if not create_form:
@@ -109,13 +117,16 @@ class ClassView(GroupRequiredMixin, View):
             }
         )
 
+    def _is_authorized(self, request, id):
+        if not (course := Course.objects.filter(
+                Q(shortcut=id, lectors=request.user) | Q(shortcut=id, guarantor=request.user)
+            )):
+            return False
+        return course
+
     def _process_create_class_form(self, request, id):
         form = CreateClassForm(request.POST)
-        try:
-            course = Course.objects.filter(
-                Q(shortcut=id, lectors=request.user) | Q(shortcut=id, guarantor=request.user)
-            )[0]
-        except (ObjectDoesNotExist, IndexError):
+        if not (course := self._is_authorized(request, id)):
             return HttpResponse(status=400)
 
         if form.is_valid():
@@ -128,6 +139,9 @@ class ClassView(GroupRequiredMixin, View):
         return self.get(request, id, create_form=form)
 
     def _process_remove_class_form(self, request, id):
+        if not (course := self._is_authorized(request, id)):
+            return HttpResponse(status=400)
+
         form = RemoveClassForm(request.POST)
         if form.is_valid():
             obj = models.Class.objects.get(pk=form.data["id"])
@@ -172,6 +186,12 @@ class AddClassDateForm(forms.ModelForm):
         }
 
 
+class EditRoomForm(forms.ModelForm):
+    class Meta:
+        model = Room
+        fields = ["shortcut"]
+
+
 class EditClassView(GroupRequiredMixin, View):
     template_name = "class/admin/class.html"
 
@@ -193,7 +213,7 @@ class EditClassView(GroupRequiredMixin, View):
                 )
             )[0]
         except (ObjectDoesNotExist, IndexError):
-            return None
+            raise
 
     def _get_edit_form(self, request, class_obj):
         edit_form = CreateClassForm(
@@ -217,7 +237,7 @@ class EditClassView(GroupRequiredMixin, View):
             try:
                 assessments = models.Assessment.objects.filter(student=student, evaluated_class=class_obj)
             except ObjectDoesNotExist:
-                continue
+                points[student.username] = None
 
             points[student.username] = sum(assessment.point_evaluation for assessment in assessments)
 
@@ -228,7 +248,10 @@ class EditClassView(GroupRequiredMixin, View):
             class_id=class_obj
         ).all()
 
-    def get(self, request, id, class_id, edit_form = None, add_class_form = None, *args, **kwargs):
+    def _get_rooms(self, class_obj):
+        return class_obj.rooms.all(), Room.objects.all()
+
+    def get(self, request, id, class_id, edit_form = None, add_class_form = None, add_room_form = None, *args, **kwargs):
         try:
             class_obj = self._get_class(request, id, class_id)
         except (ObjectDoesNotExist, IndexError):
@@ -240,6 +263,15 @@ class EditClassView(GroupRequiredMixin, View):
         if not add_class_form:
             add_class_form = AddClassDateForm()
 
+        if not edit_form:
+            add_room_form = EditRoomForm()
+
+        class_rooms, avail_rooms = self._get_rooms(class_obj)
+
+        registered = {}
+        for regs in models.RegistrationToClass.objects.filter(class_id=class_obj):
+            registered[regs.user.username] = regs.accepted
+
         return render(
             request,
             self.template_name,
@@ -247,9 +279,13 @@ class EditClassView(GroupRequiredMixin, View):
                 "class": class_obj,
                 "CreateClassForm": edit_form,
                 "students": class_obj.students.select_related(),
+                "registered": registered,
                 "points": self._get_students_points(class_obj),
                 "classes": self._get_class_dates(class_obj),
-                "CreateClassDateForm": add_class_form
+                "CreateClassDateForm": add_class_form,
+                "EditRoomForm": add_room_form,
+                "rooms": class_rooms,
+                "avail_rooms": avail_rooms
             }
         )
 
@@ -276,6 +312,9 @@ class EditClassView(GroupRequiredMixin, View):
         return self.get(request, course, class_id, form if not form.errors else None)
 
     def _accept_student(self, request, course, class_id):
+        if (not (class_obj := self._get_class(request, course, class_id))):
+            return HttpResponse(status=403)
+
         form = RemoveClassForm(request.POST)
 
         try:
@@ -291,6 +330,9 @@ class EditClassView(GroupRequiredMixin, View):
         return self.get(request, course, class_id, None)
 
     def _add_class_date(self, request, id, class_id):
+        if (not (class_obj := self._get_class(request, id, class_id))):
+            return HttpResponse(status=400)
+
         form = AddClassDateForm(request.POST)
 
         try:
@@ -322,6 +364,50 @@ class EditClassView(GroupRequiredMixin, View):
 
         return self.get(request, id, class_id, add_class_form=None)
 
+    def _add_room(self, req, id, class_id):
+        if (not (class_obj := self._get_class(req, id, class_id))):
+            return HttpResponse(status=400)
+
+        form = EditRoomForm(req.POST)
+
+        try:
+            room = Room.objects.get(shortcut=form.data["shortcut"])
+            class_obj = models.Class.objects.get(id=class_id)
+        except ObjectDoesNotExist:
+            form.add_error("shortcut", "Invalid room!")
+            return self.get(req, id, class_id, add_room_form=form)
+
+        if models.Class.objects.filter(id=class_id, rooms=room).exists():
+            form.add_error("shortcut", "Room is already assigned to this course!")
+            return self.get(req, id, class_id, add_room_form=form)
+
+        class_obj.rooms.add(room)
+        class_obj.save()
+
+        return self.get(req, id, class_id, add_room_form=None)
+
+    def _remove_room(self, req, id, class_id):
+        if (not (class_obj := self._get_class(req, id, class_id))):
+            return HttpResponse(status=400)
+
+        form = EditRoomForm(req.POST)
+
+        try:
+            room = Room.objects.get(shortcut=form.data["shortcut"])
+            class_obj = models.Class.objects.get(id=class_id)
+        except ObjectDoesNotExist:
+            form.add_error("shortcut", "Invalid room!")
+            return self.get(req, id, class_id, add_room_form=form)
+
+        if not models.Class.objects.filter(rooms=room).exists():
+            form.add_error("shortcut", "Room does not exists!")
+            return self.get(req, id, class_id, add_room_form=form)
+
+        class_obj.rooms.remove(room)
+        class_obj.save()
+
+        return self.get(req, id, class_id, add_room_form=None)
+
     def post(self, request, id, class_id):
         if "form" in request.POST:
             match request.POST["form"]:
@@ -331,6 +417,10 @@ class EditClassView(GroupRequiredMixin, View):
                     return self._accept_student(request, id, class_id)
                 case "add_class_date":
                     return self._add_class_date(request, id, class_id)
+                case "add_room":
+                    return self._add_room(request, id, class_id)
+                case "remove_room":
+                    return self._remove_room(request, id, class_id)
 
         return self.get(request, id, class_id)
 
@@ -407,17 +497,106 @@ class RegistrationSettingsView(RegistrationSettingsViewBase):
 
         return self.get(request, id, class_id, form)
 
+class AddPointsForm(forms.Form):
+    points = forms.FloatField(label='points', widget=forms.NumberInput(attrs={"min" : 0, "max" : 101}))
+
+class RemovePointsForm(forms.Form):
+    assessment_id = forms.IntegerField(label='assessment_id')
+
+class EvaluateStudentView(GroupRequiredMixin, View):
+        template_name = "evaluate_student.html"
+
+        group_required = [u"Guarantor", u"Teacher"]
+        redirect_unauthenticated_users = False
+        raise_exception = True
+
+        def _get_classes(self, request, shortcut, student_name, *args, **kwargs):
+            classes = []
+
+            course = RegistrationToCourse.objects.get(accepted=True, user=student_name, course_id=shortcut)
+
+            course_classes = models.Class.objects.filter(course=course.course_id)
+            registrations = models.RegistrationToClass.objects.filter(class_id__in=course_classes, user=student_name, accepted=True)
+            for registration in registrations:
+                classes.append(registration.class_id)
+            return classes
+
+        def _process_add_points_form(self, request, id, student_name):
+            form = AddPointsForm(request.POST)
+            try:
+                course = models.Course.objects.filter(
+                    Q(shortcut=id, lectors=request.user) | Q(shortcut=id, guarantor=request.user))
+                my_evaluated_class = models.Class.objects.get(id=form.data["class_id"])
+                student_name = models.User.objects.get(username=student_name)
+            except ObjectDoesNotExist:
+                form.add_error("description", "You are not a teacher/guarantor of this course")
+                course = None
+                return HttpResponseNotFound(f"Class {id} could not be found!")
+            if form.is_valid() and course:
+                assessment = models.Assessment()
+                assessment.point_evaluation = float(form.data['points'])
+                assessment.published_date = timezone.now()
+                assessment.evaluated_class = my_evaluated_class
+                assessment.entered_points_by = request.user
+                assessment.student = student_name
+                assessment.save()
+            else:
+                return HttpResponseNotFound(f"You are not a teacher/guarantor of this course so you can't change points!")
+
+            return self.get(request, id, student_name)
+
+        def _process_remove_points_form(self, request, id, student_name):
+            form = RemovePointsForm(request.POST)
+            try:
+                course = models.Course.objects.filter(
+                    Q(shortcut=id, lectors=request.user) | Q(shortcut=id, guarantor=request.user))
+                student_name = models.User.objects.get(username=student_name)
+                assessment = models.Assessment.objects.get(id=form.data["assessment_id"], evaluated_class=form.data["class_id"], student=student_name)
+            except ObjectDoesNotExist:
+                form.add_error("description", "You are not a teacher/guarantor of this course")
+                course = None
+                return HttpResponseNotFound(f"Class {id} could not be found!")
+            if form.is_valid() and course:
+                assessment.delete()
+            else:
+                return HttpResponseNotFound(f"You are not a teacher/guarantor of this course so you can't change points!")
+
+            return self.get(request, id, student_name)
+
+        def post(self, request, id, student_name):
+            if "form" in request.POST:
+                match request.POST["form"]:
+                    case "add_points":
+                        return self._process_add_points_form(request, id, student_name)
+                    case "remove_points":
+                        return self._process_remove_points_form(request, id, student_name)
+            return self.get(request, id, student_name)
+        def get(self, request, id, student_name, add_points=AddPointsForm(), *args, **kwargs):
+            if request.user.is_authenticated:
+                course = Course.objects.get(shortcut=id)
+                assessments = models.Assessment.objects.filter(evaluated_class__in=self._get_classes(request, id, student_name), student=student_name)
+                return render(request, "evaluate_student.html", {'course' : course, 'student_name' : student_name, 'classes' : self._get_classes(request, id, student_name), 'form' : add_points, 'assessments' : assessments})
 
 class RemoveClassDatesView(RegistrationSettingsViewBase):
-    def _remove_class_date(self, subject, class_id, date_id):
+    def _remove_class_date(self, request, subject, class_id, date_id):
         try:
-            date_obj = models.ClassDates.objects.get(class_id=class_id, id=date_id)
+            date_obj = models.ClassDates.objects.get(
+                Q(
+                    id=date_id,
+                    class_id=class_id,
+                    course__class_id__course__lectors=request.user
+                ) | Q(
+                    id=date_id,
+                    class_id=class_id,
+                    course__class_id__course__guarantor=request.user,
+                )
+            )
         except ObjectDoesNotExist:
-            return redirect("edit_class", id=subject, class_id=class_id)
+            return HttpResponse(status=400)
 
         date_obj.delete()
 
         return redirect("edit_class", id=subject, class_id=class_id)
 
     def get(self, request, id, class_id, date_id):
-        return self._remove_class_date(id, class_id, date_id)
+        return self._remove_class_date(request, id, class_id, date_id)
