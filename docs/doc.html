@@ -1,6 +1,6 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html class=" cgupnbyb idc0_343"><head>
-    <meta http-equiv="content-type" content="text/html; charset=ISO-8859-2">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
     <title>Projekt IIS</title>
     <style type="text/css">
     	table { border-collapse: collapse; }
@@ -10,71 +10,115 @@
 </head>
 <body class="vsc-initialized">
 
-<!-- Zkontrolujte prosím nastavení kódování v hlavičce dokumentu 
-     podle použitého editoru -->
 
-<h1>Název zadání (editujte)</h1> <!-- Nahradte názvem svého zadání -->
+<h1>WIS2</h1>
 
 <dl>
-	<dt>Autoři</dt>
-	<dd>První jméno <!-- Nahraďte skutečným jménem a e-mailem autora a popisem činnosti -->
-	    <a href="mailto:xautor01@stud.fit.vutbr.cz">xautor01@stud.fit.vutbr.cz</a> -
-		popis činnosti v týmu
+	<dt>Autori</dt>
+	<dd>Samuel DobroĹ
+	    <a href="mailto:xdobro23@stud.fit.vutbr.cz">xdobro23@stud.fit.vutbr.cz</a> -
+		HlavnĂ˝ koordinĂĄtor projektu, databĂĄza, pohÄžady, modely, ĹĄablĂłny
 	</dd>
-	<dd>Druhé jméno <!-- Nahraďte skutečným jménem a e-mailem autora a popisem činnosti -->
-	    <a href="mailto:xautor02@stud.fit.vutbr.cz">xautor02@stud.fit.vutbr.cz</a> - 
-		popis činnosti v týmu
+	<dd>TomĂĄĹĄ Homola
+	    <a href="mailto:xhomol28@stud.fit.vutbr.cz">xhomol28@stud.fit.vutbr.cz</a> - 
+		ER diagram, dokumentĂĄcia, pohÄžady, modely, ĹĄablĂłny
 	</dd>
-  <dd>Třetí jméno <!-- Nahraďte skutečným jménem a e-mailem autora a popisem činnosti -->
-	    <a href="mailto:xautor03@stud.fit.vutbr.cz">xautor03@stud.fit.vutbr.cz</a> - 
-		popis činnosti v týmu
+  <dd>Juraj RemeĹ
+	    <a href="mailto:xremen02@stud.fit.vutbr.cz">xremen02@stud.fit.vutbr.cz</a> - 
+		PohÄžady, modely, ĹĄablĂłny, databĂĄza
 	</dd>
 	<dt>URL aplikace</dt>
-	<dd><a href="http://www.stud.fit.vutbr.cz/~xautor01/IIS">http://www.stud.fit.vutbr.cz/~xautor01/IIS</a></dd>
-	<dd>(pokud má aplikace více vstupních stránek, napište obdobně další URL)</dd>
+	<dd><a href="http://wis2.dobron.sk/">http://wis2.dobron.sk/</a></dd>
 </dl>
 
-<h2>Uživatelé systému pro testování</h2>
-<p>Uveďte prosím existující zástupce <strong>všech rolí uživatelů</strong>.</p>
+<h2>UĹživatelĂŠ systĂŠmu pro testovĂĄnĂ­</h2>
 <table>
 <tbody><tr><th>Login</th><th>Heslo</th><th>Role</th></tr>
-<tr><td>admin</td><td>admin</td><td>Administrátor</td></tr>
-<tr><td>prodavac</td><td>prodavac</td><td>Prodavač</td></tr>
-<tr><td>franta</td><td>franta</td><td>Zákazník</td></tr>
-</tbody></table>
-
-<p>(Diagram případů užití není nutné vkládat, pokud IS implementuje role a případy užití definované zadáním.)</p> 
+<tr><td>lampa</td><td>123</td><td>AdministrĂĄtor</td></tr>
+<tr><td>xremen02</td><td>123</td><td>Ĺ tudent</td></tr>
+<tr><td>ihynek</td><td>123</td><td>Lektor</td></tr>
+<tr><td>kreslikova</td><td>123</td><td>Garant</td></tr>
+<tr><td></td><td></td><td>NeregistrovanĂ˝ uĹživatel</td></tr>
+</tbody></table> 
 
 <h3>Video</h3>
 
-<p>Přiložte odkaz na komentované video demostrující použití informačního
- systému. Zaměřte se na případy užití definované zadáním (např. 
-registrace uživatele, správa uživatelů a činnosti jednotlivých rolí). 
-Video nahrajte například na VUT Google Drive, kde ho bude možné přímo 
-spustit z odkazu.</p> 
+<p>...</p> 
 
-<h2>Implementace</h2>
-<p>Stručná dokumentace k implementaci, která popisuje, které části 
-projektu (např. PHP skripty) implementují jednotlivé případy použití.</p>
+<h2>ImplementĂĄcia</h2>
+<p>AplikĂĄcia je rozdelenĂĄ do viacerĂ˝ch "podaplikĂĄciĂ­" (https://docs.djangoproject.com/en/4.1/ref/applications/#module-django.apps)
+	kde kaĹždĂĄ implementuje svoje modely, pohÄžady a sprĂĄvanie:
+	<ul>
+		<li>class - registrĂĄcia na termĂ­n, vytvĂĄranie, detailnĂŠ zobrazenie, editĂĄcia, odstrĂĄnenie , hodnotenie ĹĄtudenta, ...</li>
+		<li>course - registrĂĄcia na kurz, vytvĂĄranie, schvaÄžovanie, zobrazenie, editĂĄcia, zobrazenie rozvrhu, ...</li>
+		<li>login - prihlasovanie do systĂŠmu, editovanie profilu, zobrazenie dostupnĂ˝ch kurzov, odhlĂĄsenie, ...</li>
+		<li>overview - prehÄžad</li>
+		<li>room - vytvorenie, editovanie a odstrĂĄnenie miestnosti</li>
+	</ul>
+	KaĹždĂĄ aplikĂĄcia je reprezentovanĂĄ prieÄinkom, kde sĂş sĂşbory <ul><li> <code style="
+	font-family: Consolas;
+	color: crimson;
+	background-color: #f1f1f1;
+	padding: 2px;
+  ">view.py</code> - implementĂĄcia chovania aplikĂĄcie pre ĹĄtudenta, pohÄžady, generuje sa pouĹžitĂ­m HTML ĹĄablĂłn vo web/templates/,
+	</li><li><code style="
+		  font-family: Consolas;
+		  color: crimson;
+		  background-color: #f1f1f1;
+		  padding: 2px;
+		">admin.py</code> - implementĂĄcia pohÄžadov a chovania pre uÄiteÄža a administrĂĄtora,
+	</li><li><code style="
+		  font-family: Consolas;
+		  color: crimson;
+		  background-color: #f1f1f1;
+		  padding: 2px;
+		">urls.py, models.py</code> - modely
+	</li></ul>
+</p>
 
-<h3>Databáze</h3>
+<h3>DatabĂĄza</h3>
 
-Zde vložte grafické schéma relační databáze (tabulek v databázi).
+<p>
+    <img src="ERD.png" alt="ERD diagram" />
+</p>
 
-<h2>Instalace</h2>
+<h2>InĹĄtalĂĄcia</h2>
 
-Stručně popište: 
 <ul>
-<li>postup instalace na server,</li>
-<li>softwarové požadavky (verze PHP apod.),</li>
-<li>jak rozbalit, konfigurovat, inicializovat databázi, ...</li>
+<p><li>Postup inĹĄtalĂĄcie na server:</li></p><p>
+InĹĄtalĂĄcia ako docker aplikĂĄcia, priÄom sa na deploy pouĹžije docker-compose, ktorĂ˝ vytvorĂ­
+2 kontajnery: 
+		<ul>
+			<li>mariadb</li>
+			<li>kontajner s web aplikĂĄciou - python3.10, kde sa pomocou enviroment managera pipenv nainĹĄtalujĂş potrebnĂŠ kniĹžnice</li>
+			Kontajnere sa potom spustia a sĂş dostupnĂŠ na porte 8000
+		</ul></p>
+<p><li>Ako rozbaliĹĽ, konfigurovaĹĽ, inicializovaĹĽ databĂĄzu, ...</li></p>
+<ul>
+	<li>InicializĂĄcia databĂĄzy: <code style="
+		  font-family: Consolas;
+		  color: crimson;
+		  background-color: #f1f1f1;
+		  padding: 2px;
+		">python run manage.py loaddata web/data/*</code></li>
+	<li>Vytvorenie databĂĄzovĂ˝ch tabuliek: <code style="
+		font-family: Consolas;
+		color: crimson;
+		background-color: #f1f1f1;
+		padding: 2px;
+	  ">python run manage.py migrate</code></li>
+	<li>Spustenie servera: <code style="
+		font-family: Consolas;
+		color: crimson;
+		background-color: #f1f1f1;
+		padding: 2px;
+	  ">pipenv run web/manage.py runserver</code></li>
+</ul>
 </ul>
 
-<h2>Známé problémy</h2>
-<p>Zde popište, které body zadání nejsou implementovány a z jakého 
-důvodu. Např. &#8222;Z časových důvodů nebyla implementována správa 
-uživatelů.&#8221; Pomůžete tím zrychlit hodnocení, když neimplementované 
-funkce nebudeme muset dlouze hledat.</p>
+<h2>ZnĂĄme problĂŠmy</h2>
+<p>OdstrĂĄnenie kurzu</p>
+<p>Prihlasovanie cez inĂ˝ prehliadaÄ neĹž Firefox spĂ´sobuje problĂŠmy s prihlasovanĂ­m.</p>
 
 
 
