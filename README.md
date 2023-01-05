@@ -1,11 +1,15 @@
 # WIS2
+Information system for our faculty.  
 
+Idea is, to have courses to whose students can register, course is then separated into classes whose
+needs to be registered by students. Students in classes could be then examined by teachers.
+It also implements lots of other features useful in faculty information system.
+
+
+Screenshot:
+![Screenshot](https://i3.ytimg.com/vi/MgoSPsoobMg/maxresdefault.jpg)
 
 ## Deployment
-### Production
-
-
-
 ### Development
 Nothing really special, project requires just:
 * `pipenv` - installation steps [here](https://pipenv.pypa.io/en/latest/#install-pipenv-today)
